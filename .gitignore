@@ -1,0 +1,13 @@
+.~
+bin/**
+.vscode/**
+logs/**
+*.iq
+*.prg
+*.code-workspace
+*~
+debug/**
+temp/**
+#gen/
+#internal-mir/
+#mir/

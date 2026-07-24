@@ -1,0 +1,5 @@
+<fonts>
+    <font id="BatterySmall" filename="BatterySmall.fnt" filter="01234567" />
+    <font id="BatteryMedium" filename="BatteryMedium.fnt" filter="BF0123456" />
+    <font id="BatteryLarge" filename="BatteryMedium.fnt" filter="01234567" />
+</fonts>
