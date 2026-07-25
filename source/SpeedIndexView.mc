@@ -14,6 +14,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var colorMode=new ColorMode() as ColorMode;
     private var debugMode=false as Boolean;
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
+    private var ds=new DataStorage(System.getDeviceSettings().screenWidth) as DataStorage;
 
     function initialize() {
         LogMonkey.Debug.logMessage("SpeedIndexView.initialize()","");
@@ -31,6 +32,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         centerBottom.setText("km/h");
         centerBottom.setVisible(true);
         //onSettingsChanged();
+
     }
     /***
     private var sensorSpeed=null as Float or Null;
@@ -64,7 +66,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:bottomLeft).setFont(Graphics.FONT_TINY);
             labels.get(:bottomRight).setFont(Graphics.FONT_XTINY);
             centerBottom.setFont(Graphics.FONT_TINY);
-            centerRight.setFont(Graphics.FONT_XTINY);
+            centerRight.setFont(Graphics.FONT_MEDIUM);
         }
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
@@ -95,10 +97,10 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.setColors(colorMode.getColors());
         info(:topLeft).setColor(Graphics.COLOR_DK_RED);
         info(:bottomLeft).setColor(Graphics.COLOR_DK_BLUE);
-        setTextInfo(:topLeft,info.maxSpeed==null?"56.7":info.maxSpeed.format("%.1f"));
+        setTextInfo(:topLeft,info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
-        setTextInfo(:bottomLeft,info.averageSpeed==null?"25.6":info.averageSpeed.format("%.1f"));
-        setTextInfo(:bottomRight,info.timerState==null?"-":TST.get(info.timerState));
+        setTextInfo(:bottomLeft,info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
+        setTextInfo(:bottomRight,info.timerState==null?"--":TST.get(info.timerState));
         setTextColor(:bottomRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
         var speed=0;
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
@@ -114,7 +116,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             setTextInfo(:topRight,"GPS");
             valueArea.setColor(Graphics.COLOR_BLACK);            
         }
+        //speed=Math.rand()%200/10;
         if(speed!=null){
+            ds.add(speed);
             speed*=3.6f;
         } else {
             speed=-1;
@@ -138,9 +142,12 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         centerRight.setVisible(valueArea.getVisible());
 
         centerBottom.setVisible(valueArea.getVisible());
-        
+        LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
     }
     public function onUpdate(dc as Dc) as Void {
+        dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
+        dc.clear();
+        ds.draw(dc,labelLine);
         SlavicsSimpleDataField.onUpdate(dc);
     }
 

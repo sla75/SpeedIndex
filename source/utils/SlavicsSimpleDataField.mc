@@ -8,7 +8,7 @@ import Toybox.WatchUi;
 import LogMonkey;
 
 class SlavicsSimpleDataField extends WatchUi.DataField {
-    private const LABELHEIGHT=0.25f as Numeric;
+
     public const FONTS=[
             Graphics.FONT_NUMBER_THAI_HOT,
             Graphics.FONT_NUMBER_HOT,
@@ -194,8 +194,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             valueArea.setFont(FONTS[i]);
         }
         /***/
-        dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
-        dc.clear();
+        //dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
+        //dc.clear();
 
         //var baseLineY=valueArea.locY-Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2+Graphics.getFontAscent(Graphics.FONT_NUMBER_THAI_HOT);
 
