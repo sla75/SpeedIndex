@@ -20,46 +20,67 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             Graphics.FONT_TINY,
             Graphics.FONT_XTINY,
         ] as Array<Graphics.FontType>;
-
+    /***
     protected var labelArea = new WatchUi.TextArea({
             :text=>"",
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>FONTS.slice(4,null),
             :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
-        }) as TextArea;
-    protected var valueArea=new WatchUi.TextArea({
+        });
+        /***/
+    protected var labelArea = new MyText({
+            :text=>"",
+            :color=>Graphics.COLOR_DK_GRAY,
+            :font=>Graphics.FONT_SMALL,
+            :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
+        });
+    protected var valueArea=new MyText({
             :text=>"",
             :color=>Graphics.COLOR_DK_BLUE,
-            :font=>FONTS,
+            //:font=>FONTS,
+            :font=>Graphics.FONT_NUMBER_THAI_HOT,
             :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
-        }) as TextArea;
+        });
     protected var labels={
-        :topLeft=>new Text({
+        :topLeft=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_LEFT,
-            :visibility=>false
+            :visible=>false
         }),
-        :topRight=>new Text({
+        :topRight=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_RIGHT,
-            :visibility=>false
+            :visible=>false
         }),
-        :bottomLeft=>new Text({
+        :bottomLeft=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_LEFT,
-            :visibility=>false
+            :visible=>false
         }),
-        :bottomRight=>new Text({
+        :bottomRight=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_RIGHT,
-            :visibility=>false
-        })
-    };
+            :visible=>false
+        }),
+    } as Dictionary<Symbol,MyText>;
+    protected var centerBottom=new MyText({
+            :color=>Graphics.COLOR_DK_GRAY,
+            :font=>Graphics.FONT_TINY,
+            :justification=>Graphics.TEXT_JUSTIFY_CENTER,
+            :visible=>false
+        });
+    protected var centerRight=new MyText({
+            :color=>Graphics.COLOR_DK_GRAY,
+            :font=>Graphics.FONT_MEDIUM,
+            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
+            :visible=>false
+        });
     private var timer=null as SlavicsSimpleDataField.Timer;
+    var value="" as String;
 
     public var rim=0 as Number;
     public var labelLine=0 as Number;
@@ -71,22 +92,28 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.initialize()","");
         DataField.initialize();
     }
-
     function onLayout(dc as Dc) as Void {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onLayout()",dc.getWidth()+"x"+dc.getHeight());
         rim=dc.getHeight()*0.02f;
-        labelLine=dc.getHeight()*LABELHEIGHT;
+        labelLine=Graphics.getFontHeight(labelArea.getFont())*1.1;
+        labelArea.locX=dc.getWidth()/2;
+        labelArea.locY=labelLine-Graphics.getFontHeight(labelArea.getFont());
+        //labelArea.width=dc.getWidth()-2*rim;
+        //labelArea.height=labelLine*1.333f;
+        //labelArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
+        labelArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER);
 
-        labelArea.locX=rim;
-        labelArea.locY=rim;
-        labelArea.width=dc.getWidth()-2*rim;
-        labelArea.height=labelLine*1.333f;
-        labelArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
-
-        valueArea.locX=0;
-        valueArea.locY=labelLine;
+        /***
+        //valueArea.locX=0;
+        //valueArea.locY=labelLine;
         valueArea.width=dc.getWidth();
         valueArea.height=dc.getHeight()-labelLine*0.667f;
+
+        valueArea.locX=valueArea.width/2;
+        valueArea.locY=labelLine+valueArea.height/2;
+        /***/
+        valueArea.locX=dc.getWidth()/2;
+        valueArea.locY=dc.getHeight()/2;
         valueArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 
         labels.get(:topLeft).locX=self.rim;
@@ -122,12 +149,15 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             timer.start();
         }
     }
+    public function setTextColor(name as Symbol,color as ColorType){
+        labels.get(name).setColor(color);
+    }
     public function setTextLabel(text as String or Null){
         labelArea.setText(text!=null?text:"");
     }
 
     public function setValue(text as String or Null){
-        valueArea.setText(text!=null?text:"");
+        value=text!=null?text:"";
     }
     
     public function setColors(colors as Dictionary<Symbol,Graphics.ColorValue>){
@@ -151,12 +181,36 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     
     public function onUpdate(dc as Dc) as Void {
         LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()",timer);
+        valueArea.setText(value);
+        /***
+        valueArea.setFont(FONTS[FONTS.size()-1]);
+        var wht;
+        for(var i=FONTS.size()-2;i>=0;i--){
+            LogMonkey.Debug.logVariable("SlavicsSimpleDataField.computeValueFont("+value+")","i",i);
+            wht=dc.getTextDimensions(value,FONTS[i]);
+            if(wht[0]>valueArea.width||wht[1]>valueArea.height){
+                break;
+            }
+            valueArea.setFont(FONTS[i]);
+        }
+        /***/
         dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
         dc.clear();
+
+        //var baseLineY=valueArea.locY-Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2+Graphics.getFontAscent(Graphics.FONT_NUMBER_THAI_HOT);
+
+        centerBottom.locX=valueArea.locX;
+        centerBottom.locY=valueArea.locY+Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2-Graphics.getFontAscent(centerBottom.getFont())/2;
+        centerBottom.draw(dc);
+
+        centerRight.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
+        centerRight.locY=valueArea.locY-Graphics.getFontHeight(centerRight.getFont());
+        centerRight.draw(dc);
+
         valueArea.draw(dc);
         labelArea.draw(dc);
         if(timer==null||!timer.isExpired()){
-            LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()","draw topbottomleftright");
+            //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()","draw topbottomleftright");
             labels.get(:topLeft).draw(dc);
             labels.get(:topRight).draw(dc);
             labels.get(:bottomLeft).draw(dc);
@@ -169,34 +223,26 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     }
     (:debug)
     private function onUpdateAfter(dc as Dc) as Void {
-        //dc.setColor(Graphics.COLOR_TRANSPARENT, System.getDeviceSettings().isNightModeEnabled?Graphics.COLOR_BLACK:Graphics.COLOR_WHITE);
-        //dc.clear();
-        //valueArea.draw(dc);
-        //labelArea.draw(dc);
 
         dc.setColor(Graphics.COLOR_YELLOW,Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(labelArea.locX,labelArea.locY,labelArea.width,labelArea.height);
         dc.drawLine(labelArea.locX,labelArea.locY+labelArea.height/2,labelArea.locX+labelArea.width,labelArea.locY+labelArea.height/2);
 
         dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
-        dc.drawRectangle(valueArea.locX,valueArea.locY,valueArea.width,valueArea.height);
-        dc.drawLine(valueArea.locX,valueArea.locY+valueArea.height/2,valueArea.locX+valueArea.width,valueArea.locY+valueArea.height/2);
-    }
-
-    class MyText extends WatchUi.Text{
-        private var myFont as Graphics.FontType;
-        function initialize(options as Dictionary){
-            Text.initialize(options);
-            myFont=options.get(:font)==null?Graphics.FONT_TINY:options.get(:font);
-            Text.setFont(myFont);
-        }
-        function setFont(font as Graphics.FontType) as Void {
-            myFont=font;
-            Text.setFont(font);
-        }
-        function getFont() as Graphics.FontType {
-            return myFont;
-        }
+        //dc.drawRectangle(valueArea.locX,valueArea.locY,valueArea.width,valueArea.height);
+        //dc.drawLine(valueArea.locX,valueArea.locY+valueArea.height/2,valueArea.locX+valueArea.width,valueArea.locY+valueArea.height/2);
+        var valueDim=dc.getTextDimensions(value,Graphics.FONT_NUMBER_THAI_HOT);
+        dc.drawRectangle(valueArea.locX-valueDim[0]/2,valueArea.locY-valueDim[1]/2,valueDim[0],valueDim[1]);
+        dc.drawLine(valueArea.locX,valueArea.locY-valueDim[1]/2+5,valueArea.locX,valueArea.locY+valueDim[1]/2-5);
+        dc.drawLine(valueArea.locX-valueDim[0]/2-15,valueArea.locY,valueArea.locX+valueDim[0]/2+15,valueArea.locY);
+        LogMonkey.Debug.logVariable("SlavicsSimpleDataField.onUpdateAfter()","font Dim height",valueDim[1]);
+        LogMonkey.Debug.logVariable("SlavicsSimpleDataField.onUpdateAfter()","font height",Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT));
+        dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);
+        //var fa=Graphics.getFontAscent(Graphics.FONT_NUMBER_THAI_HOT);
+        var baseLineY=valueArea.locY-Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2+Graphics.getFontAscent(Graphics.FONT_NUMBER_THAI_HOT);
+        dc.drawLine(valueArea.locX-valueDim[0]/2,baseLineY,valueArea.locX+valueDim[0]/2,baseLineY);
+        
+        
     }
 
     class Timer {

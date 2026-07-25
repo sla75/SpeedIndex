@@ -21,6 +21,15 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //Sensor.setEnabledSensors( [Sensor.SENSOR_BIKESPEED] );
     	//Sensor.enableSensorEvents(method(:onSensor));
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
+
+        labels.get(:topLeft).setVisible(true);
+        labels.get(:topRight).setVisible(true);
+        labels.get(:bottomLeft).setVisible(true);
+        labels.get(:bottomRight).setVisible(true);
+
+        centerRight.setVisible(true);
+        centerBottom.setText("km/h");
+        centerBottom.setVisible(true);
         //onSettingsChanged();
     }
     /***
@@ -43,15 +52,19 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:topRight).setFont(Graphics.FONT_SMALL);
+            labels.get(:topRight).setFont(Graphics.FONT_TINY);
             labels.get(:bottomLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:bottomRight).setFont(Graphics.FONT_SMALL);
+            labels.get(:bottomRight).setFont(Graphics.FONT_TINY);
+            centerBottom.setFont(Graphics.FONT_SMALL);
+            centerRight.setFont(Graphics.FONT_MEDIUM);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_TINY);
-            labels.get(:topRight).setFont(Graphics.FONT_TINY);
+            labels.get(:topRight).setFont(Graphics.FONT_XTINY);
             labels.get(:bottomLeft).setFont(Graphics.FONT_TINY);
-            labels.get(:bottomRight).setFont(Graphics.FONT_TINY);
+            labels.get(:bottomRight).setFont(Graphics.FONT_XTINY);
+            centerBottom.setFont(Graphics.FONT_TINY);
+            centerRight.setFont(Graphics.FONT_XTINY);
         }
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
@@ -72,36 +85,58 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //self.setTextLabel("label");
     }
     /***/
-    private static const TS={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
+    private static const TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
+    private static const TSC={Activity.TIMER_STATE_OFF=>Graphics.COLOR_DK_GRAY,Activity.TIMER_STATE_STOPPED=>Graphics.COLOR_BLACK,Activity.TIMER_STATE_PAUSED=>Graphics.COLOR_ORANGE,Activity.TIMER_STATE_ON=>Graphics.COLOR_DK_GREEN} as Dictionary<Activity.TimerState,ColorType>;
     //private var invalidBoardShiftCount=0 as Number;
     function compute(info as Activity.Info) as Void {
-        LogMonkey.Debug.logMessage("SpeedIndexView","compute()");
+        //LogMonkey.Debug.logMessage("SpeedIndexView","compute(speed="+info.currentSpeed+")");
         SlavicsSimpleDataField.compute(info);
         colorMode.compute();
         SlavicsSimpleDataField.setColors(colorMode.getColors());
-        labels.get(:topLeft).setColor(Graphics.COLOR_DK_RED);
-        //labels.get(:topRight).setColor();
-        labels.get(:bottomLeft).setColor(Graphics.COLOR_DK_BLUE);
-        //labels.get(:bottomRight).setColor();
-        setTextInfo(:topLeft,info.maxSpeed==null?"--":info.maxSpeed.format("%.1f"));
-        setTextInfo(:bottomLeft,info.averageSpeed==null?"--":info.averageSpeed.format("%.1f"));
-        setTextInfo(:bottomRight,info.timerState==null?"-":TS.get(info.timerState));
-        var speed;
+        info(:topLeft).setColor(Graphics.COLOR_DK_RED);
+        info(:bottomLeft).setColor(Graphics.COLOR_DK_BLUE);
+        setTextInfo(:topLeft,info.maxSpeed==null?"56.7":info.maxSpeed.format("%.1f"));
+        LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
+        setTextInfo(:bottomLeft,info.averageSpeed==null?"25.6":info.averageSpeed.format("%.1f"));
+        setTextInfo(:bottomRight,info.timerState==null?"-":TST.get(info.timerState));
+        setTextColor(:bottomRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
+        var speed=0;
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo();
-            setTextInfo(:topRight,"<((");
+            info(:topRight).setColor(Graphics.COLOR_DK_GREEN);
+            setTextInfo(:topRight,"RS");
             valueArea.setColor(Graphics.COLOR_DK_BLUE);
         } else {
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
+            speed=info.currentSpeed==null?0:info.currentSpeed;
             speed=info.currentSpeed;
+            info(:topRight).setColor(Graphics.COLOR_BLACK);
             setTextInfo(:topRight,"GPS");
             valueArea.setColor(Graphics.COLOR_BLACK);            
         }
+
         speed*=3.6f;
-        if(speed>=10){
-            setValue(speed.format("%d"));
-        } else {
-            setValue(speed.format("%.1f"));
+        //speed=56.789f;
+        if(info.timerState==Activity.TIMER_STATE_ON){
+        } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
+            valueArea.setColor(Graphics.COLOR_LT_GRAY);
+        } else if(info.timerState==Activity.TIMER_STATE_PAUSED){
+            valueArea.setColor(Graphics.COLOR_ORANGE);
         }
+        valueArea.setVisible(true);
+        if(speed>5f&&info.timerState!=Activity.TIMER_STATE_ON&&System.getClockTime().sec%2==1){
+            valueArea.setVisible(false);
+        }
+
+        setValue(speed.format("%d"));
+
+        centerRight.setText(((speed-speed.toNumber())*10).toNumber().toString());
+        centerRight.setColor(valueArea.getColor());
+        centerRight.setVisible(valueArea.getVisible());
+
+        centerBottom.setVisible(valueArea.getVisible());
+        
     }
     public function onUpdate(dc as Dc) as Void {
         SlavicsSimpleDataField.onUpdate(dc);
