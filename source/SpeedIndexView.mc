@@ -117,7 +117,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speed!=null){
             speed*=3.6f;
         } else {
-            speed=-1
+            speed=-1;
         }
         //speed=56.789f;
         if(info.timerState==Activity.TIMER_STATE_ON){
