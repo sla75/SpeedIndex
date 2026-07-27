@@ -1,0 +1,59 @@
+<resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
+    <strings>
+        <string id="property_fitFileSaving_title" translatable="false">Save data to FIT file</string>
+        <string id="property_debugMode_title" translatable="false">Fullscreen Debug Mode</string>
+        <string id="RD_totalShifts_unit" translatable="false"> </string>
+        <string id="space" translatable="false"> </string>
+    </strings>
+
+    <properties>
+        <!--property id="property_version" type="string">0.0.0</property>
+        <property id="property_fitFileSaving" type="boolean">true</property>
+        <property id="property_showTeeth" type="boolean">true</property>
+        <property id="property_nightMode" type="boolean">false</property-->
+        <property id="property_graphCcolorMode" type="number">1</property>
+        <!--property id="property_showAdditionalValues" type="number">0</property>
+        <property id="property_numberOfShifts" type="boolean">true</property>
+        <property id="property_debugMode" type="boolean">true</property-->
+    </properties>
+
+    <settings>
+        <!--setting propertyKey="@Properties.property_version" title="@Strings.property_version_title">
+            <settingConfig type="alphaNumeric" readonly="true"/>
+        </setting>
+        <setting propertyKey="@Properties.property_fitFileSaving" title="@Strings.property_fitFileSaving_title">
+            <settingConfig type="boolean" required="true" />
+        </setting>
+        <setting propertyKey="@Properties.property_showTeeth" title="@Strings.property_showTeeth_title">
+            <settingConfig type="boolean" required="true" />
+        </setting>
+        <setting propertyKey="@Properties.property_nightMode" title="@Strings.property_nightMode_title">
+            <settingConfig type="boolean" required="true" />
+        </setting-->
+        <setting propertyKey="@Properties.property_graphCcolorMode" title="@Strings.property_graphCcolorMode_title">
+            <settingConfig type="list">
+                <listEntry value="0">Not show</listEntry>
+                <listEntry value="1">YellowOrange</listEntry>
+                <listEntry value="2">OrangeRed</listEntry>
+                <listEntry value="3">RedDarkRed</listEntry>
+            </settingConfig>
+        </setting>
+        <!--setting propertyKey="@Properties.property_showAdditionalValues" title="@Strings.property_showAdditionalValues_title" prompt="@Strings.property_showAdditionalValues_prompt">
+            <settingConfig type="list">
+                <listEntry value="-1">@Strings.Newer</listEntry>
+                <listEntry value="0">@Strings.Always</listEntry>
+                <listEntry value="3">3s</listEntry>
+                <listEntry value="5">5s</listEntry>
+                <listEntry value="10">10s</listEntry>
+                <listEntry value="30">30s</listEntry>
+                <listEntry value="60">1m</listEntry>
+            </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.property_numberOfShifts" title="@Strings.property_numberOfShifts_title">
+            <settingConfig type="boolean" required="true" />
+        </setting>
+        <setting propertyKey="@Properties.property_debugMode" title="@Strings.property_debugMode_title">
+            <settingConfig type="boolean" required="true" />
+        </setting-->
+    </settings>
+</resources>
