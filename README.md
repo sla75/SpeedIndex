@@ -1,2 +1,2 @@
-# GearIndex
-Simple DataField of Rear Gear Index for SRAM, Di2.
+# SpeedIndex
+Simple DataField of speed with grapical view.
