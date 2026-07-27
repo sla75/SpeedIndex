@@ -1,17 +1,17 @@
 <resources xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://developer.garmin.com/downloads/connect-iq/resources.xsd">
-    <strings>
+    <!--strings>
         <string id="property_fitFileSaving_title" translatable="false">Save data to FIT file</string>
         <string id="property_debugMode_title" translatable="false">Fullscreen Debug Mode</string>
         <string id="RD_totalShifts_unit" translatable="false"> </string>
         <string id="space" translatable="false"> </string>
-    </strings>
+    </strings-->
 
     <properties>
         <!--property id="property_version" type="string">0.0.0</property>
         <property id="property_fitFileSaving" type="boolean">true</property>
         <property id="property_showTeeth" type="boolean">true</property>
         <property id="property_nightMode" type="boolean">false</property-->
-        <property id="property_graphCcolorMode" type="number">1</property>
+        <property id="property_graphColorMode" type="number">1</property>
         <!--property id="property_showAdditionalValues" type="number">0</property>
         <property id="property_numberOfShifts" type="boolean">true</property>
         <property id="property_debugMode" type="boolean">true</property-->
@@ -30,7 +30,7 @@
         <setting propertyKey="@Properties.property_nightMode" title="@Strings.property_nightMode_title">
             <settingConfig type="boolean" required="true" />
         </setting-->
-        <setting propertyKey="@Properties.property_graphCcolorMode" title="@Strings.property_graphCcolorMode_title">
+        <setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">
             <settingConfig type="list">
                 <listEntry value="0">Not show</listEntry>
                 <listEntry value="1">YellowOrange</listEntry>
