@@ -61,9 +61,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             centerRight.setFont(Graphics.FONT_MEDIUM);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
-            labels.get(:topLeft).setFont(Graphics.FONT_TINY);
+            labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
             labels.get(:topRight).setFont(Graphics.FONT_XTINY);
-            labels.get(:bottomLeft).setFont(Graphics.FONT_TINY);
+            labels.get(:bottomLeft).setFont(Graphics.FONT_SMALL);
             labels.get(:bottomRight).setFont(Graphics.FONT_XTINY);
             centerBottom.setFont(Graphics.FONT_TINY);
             centerRight.setFont(Graphics.FONT_MEDIUM);
@@ -106,23 +106,23 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo().speed;
-            info(:topRight).setColor(Graphics.COLOR_DK_GREEN);
-            setTextInfo(:topRight,"RS");
+            info(:topRight).setColor(Graphics.COLOR_DK_BLUE);
+            setTextInfo(:topRight,"BS");
             valueArea.setColor(Graphics.COLOR_DK_BLUE);
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
-            speed=info.currentSpeed==null?0:info.currentSpeed;
+            speed=info.currentSpeed==null?-1:info.currentSpeed;
             info(:topRight).setColor(Graphics.COLOR_BLACK);
             setTextInfo(:topRight,"GPS");
             valueArea.setColor(Graphics.COLOR_BLACK);            
         }
         //speed=Math.rand()%200/10;
         if(speed!=null){
-            ds.add(speed);
             speed*=3.6f;
         } else {
             speed=-1;
         }
+        ds.add(speed<0?null:speed);
         //speed=56.789f;
         if(info.timerState==Activity.TIMER_STATE_ON){
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
@@ -134,14 +134,18 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speed>5f&&info.timerState!=Activity.TIMER_STATE_ON&&System.getClockTime().sec%2==1){
             valueArea.setVisible(false);
         }
-
-        setValue(speed.format("%d"));
-        centerRight.setText(((speed-speed.toNumber())*10).toNumber().toString());
+        if(speed>=0){
+            setValue(speed.format("%d"));
+            centerRight.setText(((speed-speed.toNumber())*10).toNumber().toString());
+        } else {
+            setValue("--");
+            centerRight.setText("");
+        }
         
         centerRight.setColor(valueArea.getColor());
-        centerRight.setVisible(valueArea.getVisible());
+        centerRight.setVisible(valueArea.isVisible());
 
-        centerBottom.setVisible(valueArea.getVisible());
+        centerBottom.setVisible(valueArea.isVisible());
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
     }
     public function onUpdate(dc as Dc) as Void {

@@ -3,13 +3,22 @@ import Toybox.Lang;
 import LogMonkey;
 
 class DataStorage {
+
     private var data as Array<Numeric>;
     private var maxSize as Number;
+    private var minMaximumGraphValue=0 as Number;
+    private var colors={:line=>Graphics.COLOR_YELLOW,:value=>Graphics.COLOR_ORANGE,:minmax=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
         self.maxSize=size;
         data=[] as Array<Numeric>;
+    }
+    public function setColors(colors as Dictionary<Symbol,Graphics.ColorType>){
+        self.colors=colors;
+    }
+    function setMinMaximumGraphValue(value as Numeric) as Void {
+        self.minMaximumGraphValue=value;
     }
     function add(numeric as Numeric or Null) as Void {
         if(data.size()>=maxSize){
@@ -31,7 +40,7 @@ class DataStorage {
                 continue;
             }
             if(mm==null){
-                mm=[data[i],data[i]] as [Numeric,Numeric];
+                mm=[data[i],minMaximumGraphValue] as [Numeric,Numeric];
                 continue;
             }
             if(mm[0]>data[i]){
@@ -70,31 +79,35 @@ class DataStorage {
         }
         var k=(dc.getHeight()-shiftX)/(mm[1]-mm[0]).toFloat();
         LogMonkey.Debug.logVariable("DataStorage.draw()","k",k);
-        var lastXY=null;
+        var lastXY=null as Array<Numeric> or Null;
         for(var i=0;i<data.size();i++){
             if(data[i]==null||i>dc.getWidth()){
                 continue;
             }
-            if(lastXY==null){
-                lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
-            }
+            //if(lastXY==null){
+            //    lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
+            //}
             //LogMonkey.Debug.logMessage("DataStorage.draw()","dc.drawLine("+i+","+(dc.getHeight()-(data[i]-mm[0])*k)+","+i+","+dc.getHeight()+")");
             dc.setPenWidth(1);
-            dc.setColor(Graphics.COLOR_YELLOW,Graphics.COLOR_TRANSPARENT);
+            dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
             dc.drawLine(dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k,dc.getWidth()-i,dc.getHeight());
             
             if(lastXY!=null){
-                dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
-                dc.setPenWidth(1);
-                dc.drawLine(lastXY[0],lastXY[1],dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k);
-            }            
-            if(data[data.size()-1-i]==mm[0]||data[data.size()-1-i]==mm[1]){
-                dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
+                dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
                 dc.setPenWidth(3);
-                dc.drawPoint(dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k);
-            }
+                dc.drawLine(lastXY[0],lastXY[1],dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k);
+                if(lastXY[2]==1){
+                    dc.setColor(colors.get(:minmax),Graphics.COLOR_TRANSPARENT);
+                    dc.fillCircle(lastXY[0],lastXY[1],5);
+                }
+            }            
+            
             dc.setPenWidth(1);
-            lastXY=[dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k] as Array<Numeric>;
+            lastXY=[dc.getWidth()-i,dc.getHeight()-(data[data.size()-1-i]-mm[0])*k,0] as Array<Numeric>;
+
+            if(data[data.size()-1-i]==mm[0]||data[data.size()-1-i]==mm[1]){
+                lastXY[2]=1;
+            }
         }
 
     }

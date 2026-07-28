@@ -62,6 +62,9 @@ class MyText extends Text{
         options.put(:color,color);
         Text.setColor(color);
     }
+    public function setColorShadow(color as Graphics.ColorType) as Void {
+        options.put(:colorshadow,color);
+    }
     public function getColor() as ColorType {
         return options.get(:color) as ColorType;
     }
@@ -69,10 +72,17 @@ class MyText extends Text{
         options.put(:visible,visible);
         Text.setVisible(visible);
     }
-    public function getVisible() as Boolean {
+    public function isVisible() as Boolean {
         return options.get(:visible) as Boolean;
     }
+    public function setJustification(justification as TextJustification or Number) as Void {
+        options.put(:justification,justification);
+        Text.setJustification(justification);
+    }
     public function Xdraw(dc as Dc) as Void {
-        
+        //if(isVisible()&&options.get(:colorshadow)!=null){
+        //    dc.drawText(self.locX,self.locY,options.get(:font) as FontType,options.get(:text) as String,options.get(:justification) as TextJustification or Number);
+        //}
+        Text.draw(dc);
     }
 }

@@ -84,7 +84,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
 
     public var rim=0 as Number;
     public var labelLine=0 as Number;
-    public var colors={:background=>Graphics.COLOR_WHITE,:label=>Graphics.COLOR_DK_GRAY,:value=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorValue>;
+    public var colors={:background=>Graphics.COLOR_WHITE,:label=>Graphics.COLOR_DK_GRAY,:value=>Graphics.COLOR_BLACK,:valueshadow=>Graphics.COLOR_LT_GRAY} as Dictionary<Symbol,Graphics.ColorValue>;
     //protected var textLabel="Label" as String;
     //protected var textValue="Value" as String;
 
@@ -206,7 +206,6 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         centerRight.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
         centerRight.locY=valueArea.locY-Graphics.getFontHeight(centerRight.getFont());
         centerRight.draw(dc);
-
         valueArea.draw(dc);
         labelArea.draw(dc);
         if(timer==null||!timer.isExpired()){
