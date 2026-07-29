@@ -14,13 +14,18 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var colorMode=new ColorMode() as ColorMode;
     private var debugMode=false as Boolean;
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
-    private var ds=new DataStorage(System.getDeviceSettings().screenWidth) as DataStorage;
+    private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
+    private var textMax as Text;
+    private var textAvg as Text;
+
+    private enum {
+        PROPERTY_SHOWGRAPH="property_showGraph",
+    }
 
     function initialize() {
         LogMonkey.Debug.logMessage("SpeedIndexView.initialize()","");
         SlavicsSimpleDataField.initialize();
-        //Sensor.setEnabledSensors( [Sensor.SENSOR_BIKESPEED] );
-    	//Sensor.enableSensorEvents(method(:onSensor));
+        Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
         labels.get(:topLeft).setVisible(true);
@@ -31,8 +36,14 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         centerRight.setVisible(true);
         centerBottom.setText("km/h");
         centerBottom.setVisible(true);
+        valueArea.setShadowColor(Graphics.COLOR_LT_GRAY);
         //onSettingsChanged();
-
+        textMax=new Text(labels.get(:topLeft).getOptions());
+        textMax.setText("Max");
+        textAvg=new Text(labels.get(:bottomLeft).getOptions());
+        textAvg.setText("Avg");
+        addDrawable(textMax);
+        addDrawable(textAvg);
     }
     /***
     private var sensorSpeed=null as Float or Null;
@@ -42,15 +53,17 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     /***/
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
-        if(Application.loadResource(Rez.Strings.AppName).equals("GearIndexDev")){
+        if(Application.loadResource(Rez.Strings.AppName).equals("SpeedIndexDev")){
             debugMode=!debugMode;
             LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","Rez.Strings.AppName="+Application.loadResource(Rez.Strings.AppName)+" REVERSE debugMode="+debugMode);
         }
+        ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         colorMode.handleSettingUpdate();
     }
 
     function onLayout(dc as Dc) as Void {
         SlavicsSimpleDataField.onLayout(dc);
+        
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
@@ -59,6 +72,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:bottomRight).setFont(Graphics.FONT_TINY);
             centerBottom.setFont(Graphics.FONT_SMALL);
             centerRight.setFont(Graphics.FONT_MEDIUM);
+            textMax.setFont(Graphics.FONT_TINY);
+        textAvg.setFont(Graphics.FONT_TINY);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
@@ -67,7 +82,17 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:bottomRight).setFont(Graphics.FONT_XTINY);
             centerBottom.setFont(Graphics.FONT_TINY);
             centerRight.setFont(Graphics.FONT_MEDIUM);
+            textMax.setFont(Graphics.FONT_XTINY);
+            textAvg.setFont(Graphics.FONT_XTINY);
         }
+        textMax.setColor(labels.get(:topLeft).getColor());
+        textMax.locX=labels.get(:topLeft).locX;
+        textMax.locY=labels.get(:topLeft).locY-Graphics.getFontHeight(Graphics.FONT_TINY);
+        textAvg.setColor(labels.get(:bottomLeft).getColor());
+        textAvg.locX=labels.get(:bottomLeft).locX;
+        textAvg.locY=labels.get(:bottomLeft).locY-Graphics.getFontHeight(Graphics.FONT_TINY);
+
+        labels.get(:bottomRight).locY=textMax.locY;
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -122,11 +147,14 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         } else {
             speed=-1;
         }
+        //ds.add(15+Math.rand()%10);
         ds.add(speed<0?null:speed);
-        //speed=56.789f;
+        ds.setAvg(info.averageSpeed!=null?info.averageSpeed*3.6:null);
+        //ds.setAvg(15f);
+
         if(info.timerState==Activity.TIMER_STATE_ON){
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
-            valueArea.setColor(Graphics.COLOR_LT_GRAY);
+            valueArea.setColor(Graphics.COLOR_DK_GRAY);
         } else if(info.timerState==Activity.TIMER_STATE_PAUSED){
             valueArea.setColor(Graphics.COLOR_ORANGE);
         }

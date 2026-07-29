@@ -3,6 +3,8 @@
     
     <string id="label">Speed</string>
     
-    <string id="property_graphColorMode">Speed graph</string>
-    <string id="property_graphColorMode_title">Show speed graph</string>
+    <!--string id="property_graphColorMode">Speed graph</string>
+    <string id="property_graphColorMode_title">Show speed graph</string-->
+    <string id="property_showGraph">Show speed graph</string>
+    <string id="property_showGraph_title">Show speed graph</string>
 </strings>

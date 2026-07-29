@@ -43,7 +43,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         });
     protected var labels={
         :topLeft=>new MyText({
-            :color=>Graphics.COLOR_DK_GRAY,
+            :color=>Graphics.COLOR_DK_RED,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_LEFT,
             :visible=>false
@@ -55,7 +55,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             :visible=>false
         }),
         :bottomLeft=>new MyText({
-            :color=>Graphics.COLOR_DK_GRAY,
+            :color=>Graphics.COLOR_DK_BLUE,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_LEFT,
             :visible=>false
@@ -87,10 +87,13 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     public var colors={:background=>Graphics.COLOR_WHITE,:label=>Graphics.COLOR_DK_GRAY,:value=>Graphics.COLOR_BLACK,:valueshadow=>Graphics.COLOR_LT_GRAY} as Dictionary<Symbol,Graphics.ColorValue>;
     //protected var textLabel="Label" as String;
     //protected var textValue="Value" as String;
-
+    private var drawables=[] as Array<Drawable>;
     function initialize() {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.initialize()","");
         DataField.initialize();
+    }
+    function addDrawable(draw as Drawable) as Void{
+        self.drawables.add(draw);
     }
     function onLayout(dc as Dc) as Void {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onLayout()",dc.getWidth()+"x"+dc.getHeight());
@@ -182,6 +185,10 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     public function onUpdate(dc as Dc) as Void {
         LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()",timer);
         valueArea.setText(value);
+
+        for( var i = 0; i < drawables.size(); i++ ) {
+            (drawables[i] as Drawable).draw(dc);
+        }
         /***
         valueArea.setFont(FONTS[FONTS.size()-1]);
         var wht;

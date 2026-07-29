@@ -9,9 +9,9 @@
     <properties>
         <!--property id="property_version" type="string">0.0.0</property>
         <property id="property_fitFileSaving" type="boolean">true</property>
-        <property id="property_showTeeth" type="boolean">true</property>
         <property id="property_nightMode" type="boolean">false</property-->
-        <property id="property_graphColorMode" type="number">1</property>
+        <property id="property_showGraph" type="boolean">true</property>
+        <!--property id="property_graphColorMode" type="number">1</property-->
         <!--property id="property_showAdditionalValues" type="number">0</property>
         <property id="property_numberOfShifts" type="boolean">true</property>
         <property id="property_debugMode" type="boolean">true</property-->
@@ -24,20 +24,20 @@
         <setting propertyKey="@Properties.property_fitFileSaving" title="@Strings.property_fitFileSaving_title">
             <settingConfig type="boolean" required="true" />
         </setting>
-        <setting propertyKey="@Properties.property_showTeeth" title="@Strings.property_showTeeth_title">
-            <settingConfig type="boolean" required="true" />
-        </setting>
         <setting propertyKey="@Properties.property_nightMode" title="@Strings.property_nightMode_title">
             <settingConfig type="boolean" required="true" />
         </setting-->
-        <setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">
+        <setting propertyKey="@Properties.property_showGraph" title="@Strings.property_showGraph_title">
+            <settingConfig type="boolean" required="true" />
+        </setting>
+        <!--setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">
             <settingConfig type="list">
                 <listEntry value="0">Not show</listEntry>
                 <listEntry value="1">YellowOrange</listEntry>
                 <listEntry value="2">OrangeRed</listEntry>
                 <listEntry value="3">RedDarkRed</listEntry>
             </settingConfig>
-        </setting>
+        </setting-->
         <!--setting propertyKey="@Properties.property_showAdditionalValues" title="@Strings.property_showAdditionalValues_title" prompt="@Strings.property_showAdditionalValues_prompt">
             <settingConfig type="list">
                 <listEntry value="-1">@Strings.Newer</listEntry>
