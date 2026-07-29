@@ -73,7 +73,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             centerBottom.setFont(Graphics.FONT_SMALL);
             centerRight.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_TINY);
-        textAvg.setFont(Graphics.FONT_TINY);
+            textAvg.setFont(Graphics.FONT_TINY);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
@@ -92,7 +92,15 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         textAvg.locX=labels.get(:bottomLeft).locX;
         textAvg.locY=labels.get(:bottomLeft).locY-Graphics.getFontHeight(Graphics.FONT_TINY);
 
-        labels.get(:bottomRight).locY=textMax.locY;
+        //labels.get(:bottomRight).locY=textMax.locY;
+        //labels.get(:topRight).locY=valueArea.locY;
+        //labels.get(:topRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT|Graphics.TEXT_JUSTIFY_VCENTER);
+
+        labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
+        labels.get(:topLeft).setShadowColor(Graphics.COLOR_PINK);
+        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_PURPLE);
+        labels.get(:topRight).setShadowColor(Graphics.COLOR_PINK);
+        labels.get(:bottomRight).setShadowColor(Graphics.COLOR_PURPLE);
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -112,7 +120,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //self.setTextLabel("label");
     }
     /***/
-    private static const TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
+    private static const _TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
+    private static const TST={Activity.TIMER_STATE_OFF=>"0",Activity.TIMER_STATE_STOPPED=>"1",Activity.TIMER_STATE_PAUSED=>"2",Activity.TIMER_STATE_ON=>"3"} as Dictionary<Activity.TimerState,String>;
     private static const TSC={Activity.TIMER_STATE_OFF=>Graphics.COLOR_DK_GRAY,Activity.TIMER_STATE_STOPPED=>Graphics.COLOR_BLACK,Activity.TIMER_STATE_PAUSED=>Graphics.COLOR_ORANGE,Activity.TIMER_STATE_ON=>Graphics.COLOR_DK_GREEN} as Dictionary<Activity.TimerState,ColorType>;
     //private var invalidBoardShiftCount=0 as Number;
     function compute(info as Activity.Info) as Void {
@@ -125,20 +134,20 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         setTextInfo(:topLeft,info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
         setTextInfo(:bottomLeft,info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
-        setTextInfo(:bottomRight,info.timerState==null?"--":TST.get(info.timerState));
-        setTextColor(:bottomRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
+        setTextInfo(:topRight,info.timerState==null?"--":TST.get(info.timerState));
+        setTextColor(:topRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
         var speed=0;
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo().speed;
-            info(:topRight).setColor(Graphics.COLOR_DK_BLUE);
-            setTextInfo(:topRight,"BS");
+            setTextColor(:bottomRight,Graphics.COLOR_DK_BLUE);
+            setTextInfo(:bottomRight,"BS");
             valueArea.setColor(Graphics.COLOR_DK_BLUE);
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
             speed=info.currentSpeed==null?-1:info.currentSpeed;
-            info(:topRight).setColor(Graphics.COLOR_BLACK);
-            setTextInfo(:topRight,"GPS");
+            setTextColor(:bottomRight,Graphics.COLOR_BLACK);
+            setTextInfo(:bottomRight,"GPS");
             valueArea.setColor(Graphics.COLOR_BLACK);            
         }
         //speed=Math.rand()%200/10;
