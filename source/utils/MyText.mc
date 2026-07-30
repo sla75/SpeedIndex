@@ -46,6 +46,9 @@ class MyText {
     public function getOptions() as Dictionary {
         return options;
     }
+    public function putOption(symbol as Symbol, value as Object) as Void {
+        options.put(symbol,value);
+    }
     public function setText(text as Lang.String or Lang.ResourceId) as Void {
         if(text instanceof Lang.ResourceId){
             text=Application.loadResource(text);
