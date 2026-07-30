@@ -38,7 +38,7 @@ class DataStorageGraph {
     }
 
     function getMinMax(size as Number) as [Numeric,Numeric] or Null{
-        var mm=null;
+        var minMax=null;
         var value;
         for(var i=data.size()-1;i>=data.size()-size;i--){
             if(i<0){
@@ -49,17 +49,17 @@ class DataStorageGraph {
             if(value==null){
                 continue;
             }
-            if(mm==null){
-                mm=[data[i],minMaximumGraphValue] as [Numeric,Numeric];
+            if(minMax==null){
+                minMax=[data[i],minMaximumGraphValue] as [Numeric,Numeric];
                 continue;
             }
-            if(mm[0]>value){
-                mm[0]=data[i];
-            } else if(mm[1]<data[i]){
-                mm[1]=data[i];
+            if(minMax[0]>value){
+                minMax[0]=data[i];
+            } else if(minMax[1]<data[i]){
+                minMax[1]=data[i];
             }
         }
-        return mm;
+        return minMax;
     }
 
     private function X_getAverage(size as Number) as Numeric or Null{

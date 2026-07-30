@@ -187,7 +187,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         valueArea.setText(value);
 
         for( var i = 0; i < drawables.size(); i++ ) {
-            (drawables[i] as Drawable).draw(dc);
+            ((drawables as Array)[i] as Drawable).draw(dc);
         }
         /***
         valueArea.setFont(FONTS[FONTS.size()-1]);
@@ -208,6 +208,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
 
         centerBottom.locX=valueArea.locX;
         centerBottom.locY=valueArea.locY+Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2-Graphics.getFontAscent(centerBottom.getFont())/2;
+        if(centerBottom.locY+Graphics.getFontHeight(centerBottom.getFont())>dc.getHeight()){
+            centerBottom.locY=dc.getHeight()-Graphics.getFontHeight(centerBottom.getFont());
+        }
         centerBottom.draw(dc);
 
         centerRight.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;

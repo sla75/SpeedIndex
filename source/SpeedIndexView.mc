@@ -97,10 +97,10 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //labels.get(:topRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT|Graphics.TEXT_JUSTIFY_VCENTER);
 
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
-        labels.get(:topLeft).setShadowColor(Graphics.COLOR_PINK);
-        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_PURPLE);
-        labels.get(:topRight).setShadowColor(Graphics.COLOR_PINK);
-        labels.get(:bottomRight).setShadowColor(Graphics.COLOR_PURPLE);
+        labels.get(:topLeft).setShadowColor(Graphics.COLOR_LT_GRAY);
+        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_LT_GRAY);
+        labels.get(:topRight).setShadowColor(Graphics.COLOR_LT_GRAY);
+        labels.get(:bottomRight).setShadowColor(Graphics.COLOR_LT_GRAY);
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -120,7 +120,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //self.setTextLabel("label");
     }
     /***/
-    private static const _TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
+    //private static const _TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
     private static const TST={Activity.TIMER_STATE_OFF=>"0",Activity.TIMER_STATE_STOPPED=>"1",Activity.TIMER_STATE_PAUSED=>"2",Activity.TIMER_STATE_ON=>"3"} as Dictionary<Activity.TimerState,String>;
     private static const TSC={Activity.TIMER_STATE_OFF=>Graphics.COLOR_DK_GRAY,Activity.TIMER_STATE_STOPPED=>Graphics.COLOR_BLACK,Activity.TIMER_STATE_PAUSED=>Graphics.COLOR_ORANGE,Activity.TIMER_STATE_ON=>Graphics.COLOR_DK_GREEN} as Dictionary<Activity.TimerState,ColorType>;
     //private var invalidBoardShiftCount=0 as Number;
