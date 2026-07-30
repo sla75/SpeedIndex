@@ -1,3 +1,4 @@
+import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
 import LogMonkey;
@@ -7,7 +8,7 @@ class DataStorageGraph {
     private var data as Array<Numeric>;
     private var maxSize as Number;
     private var average=null as Numeric or Null;
-    private var minMaximumGraphValue=0 as Number;
+    private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
     private var colors={:line=>Graphics.COLOR_YELLOW,:value=>Graphics.COLOR_ORANGE,:minmax=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorType>;
 
@@ -15,12 +16,17 @@ class DataStorageGraph {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
         self.maxSize=size;
         data=[] as Array<Numeric>;
+        Properties.setValue("property_minMaxSpeed",Properties.getValue("property_minMaxSpeed")==null?30:Properties.getValue("property_minMaxSpeed") as Number);
+        handleSettingUpdate();
+    }
+    function handleSettingUpdate() as Void {
+        minMaximumGraphValue=Properties.getValue("property_minMaxSpeed");
+        if(minMaximumGraphValue==0){
+            minMaximumGraphValue=-99999;
+        }
     }
     public function setColors(colors as Dictionary<Symbol,Graphics.ColorType>){
         self.colors=colors;
-    }
-    function setMinMaximumGraphValue(value as Numeric) as Void {
-        self.minMaximumGraphValue=value;
     }
     function setVisible(visible as Boolean) as Void {
         self.visible=visible;

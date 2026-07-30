@@ -11,6 +11,7 @@
         <property id="property_fitFileSaving" type="boolean">true</property>
         <property id="property_nightMode" type="boolean">false</property-->
         <property id="property_showGraph" type="boolean">true</property>
+        <property id="property_minMaxSpeed" type="number">30</property>
         <!--property id="property_graphColorMode" type="number">1</property-->
         <!--property id="property_showAdditionalValues" type="number">0</property>
         <property id="property_numberOfShifts" type="boolean">true</property>
@@ -29,6 +30,20 @@
         </setting-->
         <setting propertyKey="@Properties.property_showGraph" title="@Strings.property_showGraph_title">
             <settingConfig type="boolean" required="true" />
+        </setting>
+        <setting propertyKey="@Properties.property_minMaxSpeed" title="@Strings.property_minMaxSpeed_title">
+            <settingConfig type="list">
+                <listEntry value="0">Auto</listEntry>
+                <listEntry value="15">15 km/h</listEntry>
+                <listEntry value="20">20 km/h</listEntry>
+                <listEntry value="25">25 km/h</listEntry>
+                <listEntry value="30">30 km/h</listEntry>
+                <listEntry value="35">35 km/h</listEntry>
+                <listEntry value="40">40 km/h</listEntry>
+                <listEntry value="50">50 km/h</listEntry>
+                <listEntry value="60">60 km/h</listEntry>
+                <listEntry value="70">70 km/h</listEntry>
+            </settingConfig>
         </setting>
         <!--setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">
             <settingConfig type="list">

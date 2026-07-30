@@ -4,4 +4,6 @@
     <string id="property_graphColorMode_title">Zobrazit graf rychlosti</string-->
     <string id="property_showGraph">Zobrazit graf rychlosti</string>
     <string id="property_showGraph_title">Zobrazit graf rychlosti</string>
+    <string id="property_minMaxSpeed">Základní max. rychlost</string>
+    <string id="property_minMaxSpeed_title">Základní maximální rychlost v grafu</string>
 </strings>

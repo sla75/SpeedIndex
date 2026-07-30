@@ -59,6 +59,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
         ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         colorMode.handleSettingUpdate();
+        ds.handleSettingUpdate();
     }
 
     function onLayout(dc as Dc) as Void {
