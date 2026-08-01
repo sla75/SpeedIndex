@@ -5,7 +5,7 @@ import LogMonkey;
 
 class DataStorageGraph {
 
-    private var data as Array<Numeric>;
+    private var data as Array<Numeric or Null>;
     private var maxSize as Number;
     private var average=null as Numeric or Null;
     private var minMaximumGraphValue=30 as Number;
@@ -87,6 +87,7 @@ class DataStorageGraph {
         if(!visible){
             return;
         }
+        //data=[5,0,null,null,null] as Array<Numeric or Null>;
         //dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
         //dc.drawLine(0,shiftX,dc.getWidth(),dc.getHeight());
         //dc.drawLine(dc.getWidth(),shiftX,0,dc.getHeight());
@@ -102,18 +103,23 @@ class DataStorageGraph {
         var avgY=self.average!=null?dc.getHeight()-(self.average-minMax[0])*koefY:null;
         var dataY=0;
         for(var i=0;i<data.size();i++){
-            if(data[i]==null||i>dc.getWidth()){
+            if(data[data.size()-1-i]==null||i>dc.getWidth()){
+                lastXY=null;
                 continue;
             }
             //if(lastXY==null){
             //    lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
             //}
             //LogMonkey.Debug.logMessage("DataStorage.draw()","dc.drawLine("+i+","+(dc.getHeight()-(data[i]-mm[0])*k)+","+i+","+dc.getHeight()+")");
-            
+            //LogMonkey.Debug.logMessage("DataStorage.draw()","dc.drawLine("+i+") koefY="+koefY+", minMax[0]="+minMax[0]);
+            //LogMonkey.Debug.logVariable("DataStorage.draw()","data",data);
+            //LogMonkey.Debug.logVariable("DataStorage.draw()","data["+(data.size()-1-i)+"]",data[data.size()-1-i]);
             // Value line
             dc.setPenWidth(1);
             dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
+
             dataY=dc.getHeight()-(data[data.size()-1-i]-minMax[0])*koefY;
+
             if(avgY!=null){
                 
                 if(dataY<avgY){
