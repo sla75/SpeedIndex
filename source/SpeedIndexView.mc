@@ -36,14 +36,17 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         centerRight.setVisible(true);
         centerBottom.setText("km/h");
         centerBottom.setVisible(true);
-        valueArea.setShadowColor(Graphics.COLOR_LT_GRAY);
+        valueArea.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueArea.setShiftShadow(2);
+        centerRight.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+
         //onSettingsChanged();
         textMax=new Text(labels.get(:topLeft).getOptions());
         textMax.setText("Max");
         textAvg=new Text(labels.get(:bottomLeft).getOptions());
         textAvg.setText("Avg");
-        addDrawable(textMax);
-        addDrawable(textAvg);
+        //addDrawable(textMax);
+        //addDrawable(textAvg);
     }
     /***
     private var sensorSpeed=null as Float or Null;
@@ -68,9 +71,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:topRight).setFont(Graphics.FONT_TINY);
-            labels.get(:bottomLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:bottomRight).setFont(Graphics.FONT_TINY);
+            labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
             centerBottom.setFont(Graphics.FONT_SMALL);
             centerRight.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_TINY);
@@ -78,30 +79,37 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:topRight).setFont(Graphics.FONT_XTINY);
-            labels.get(:bottomLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:bottomRight).setFont(Graphics.FONT_XTINY);
+            labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
+            
             centerBottom.setFont(Graphics.FONT_TINY);
             centerRight.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_XTINY);
             textAvg.setFont(Graphics.FONT_XTINY);
         }
+
+        centerBottom.setColor(Graphics.COLOR_DK_GRAY);
+        centerBottom.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+
+        labels.get(:bottomLeft).locY=dc.getHeight()-2-Graphics.getFontHeight(labels.get(:bottomLeft).getFont());
+
         textMax.setColor(labels.get(:topLeft).getColor());
         textMax.locX=labels.get(:topLeft).locX;
-        textMax.locY=labels.get(:topLeft).locY-Graphics.getFontHeight(Graphics.FONT_TINY);
+        textMax.locY=labels.get(:topLeft).locY-Graphics.getFontHeight(labels.get(:topLeft).getFont());
         textAvg.setColor(labels.get(:bottomLeft).getColor());
         textAvg.locX=labels.get(:bottomLeft).locX;
-        textAvg.locY=labels.get(:bottomLeft).locY-Graphics.getFontHeight(Graphics.FONT_TINY);
-
-        //labels.get(:bottomRight).locY=textMax.locY;
-        //labels.get(:topRight).locY=valueArea.locY;
-        //labels.get(:topRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT|Graphics.TEXT_JUSTIFY_VCENTER);
+        textAvg.locY=labels.get(:bottomLeft).locY-Graphics.getFontHeight(labels.get(:bottomLeft).getFont());
+        labels.get(:bottomRight).locY=2;
 
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
-        labels.get(:topLeft).setShadowColor(Graphics.COLOR_LT_GRAY);
-        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_LT_GRAY);
-        labels.get(:topRight).setShadowColor(Graphics.COLOR_LT_GRAY);
-        labels.get(:bottomRight).setShadowColor(Graphics.COLOR_LT_GRAY);
+        labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
+
+        
+        labels.get(:topLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        labels.get(:topRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        labels.get(:bottomRight).setShadowColor(null,Graphics.COLOR_LT_GRAY);
+
+        valueArea.setColor(Graphics.COLOR_BLACK);
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -142,14 +150,15 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo().speed;
             setTextColor(:bottomRight,Graphics.COLOR_DK_BLUE);
-            setTextInfo(:bottomRight,"BS");
-            valueArea.setColor(Graphics.COLOR_DK_BLUE);
+            setTextInfo(:bottomRight,"B");
+            //valueArea.setColor(Graphics.COLOR_DK_BLUE);
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
             speed=info.currentSpeed==null?-1:info.currentSpeed;
             setTextColor(:bottomRight,Graphics.COLOR_BLACK);
-            setTextInfo(:bottomRight,"GPS");
-            valueArea.setColor(Graphics.COLOR_BLACK);            
+            //setTextInfo(:bottomRight,"GPS");
+            setTextInfo(:bottomRight,"G");
+            //valueArea.setColor(Graphics.COLOR_BLACK);        
         }
         //speed=Math.rand()%200/10;
         if(speed!=null){

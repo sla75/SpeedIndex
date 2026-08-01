@@ -10,7 +10,7 @@ class DataStorageGraph {
     private var average=null as Numeric or Null;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
-    private var colors={:line=>Graphics.COLOR_YELLOW,:value=>Graphics.COLOR_ORANGE,:minmax=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:line=>ColorMode.COLOR_LT_YELLOW,:value=>ColorMode.COLOR_LT_ORANGE,:minmax=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());

@@ -4,8 +4,11 @@ import Toybox.Graphics;
 import Toybox.Lang;
 
 class ColorMode {
-    enum {
+    
+    public enum {
         COLOR_VD_BLUE=0x313152,
+        COLOR_LT_ORANGE=0xFFA376,   // ORANGE FF5500
+        COLOR_LT_YELLOW=0xFFD186,    // YELLOW FFAA00
     }
     
     public var isNight=false as Boolean;

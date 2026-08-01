@@ -6,7 +6,6 @@ class MyText {
 
     private var options as Dictionary;
     private var mainText as Text;
-    private var shadowText as Text;
     public var locX as Number;
     public var locY as Number;
     public var width as Number;
@@ -26,9 +25,8 @@ class MyText {
             options.put(:visible,true);
         }
         self.options=options;
-        self.options.put(:shiftshadow,options.get(:shiftshadow)!=null?options.get(:shiftshadow):2);
+        self.options.put(:shiftShadow,options.get(:shiftShadow)!=null?options.get(:shiftShadow):1);
         mainText=new Text(options);
-        shadowText=new Text(options);
         self.locX=options.get(:locX)!=null?options.get(:locX):0;
         self.locY=options.get(:locY)!=null?options.get(:locY):0;
         self.width=0;
@@ -38,7 +36,9 @@ class MyText {
     public function setFont(font as Graphics.FontType) as Void {
         options.put(:font,font);
         mainText.setFont(font);
-        shadowText.setFont(font);
+    }
+    public function setShiftShadow(shiftShadow as Number) as Void {
+        options.put(:shiftShadow,shiftShadow);
     }
     public function getFont() as FontType {
         return options.get(:font) as FontType ;
@@ -55,7 +55,6 @@ class MyText {
         }
         options.put(:text,text);
         mainText.setText(text);
-        shadowText.setText(text);
     }
 
     public function setTextFormated(number as Numeric or Null,format as String) as Void {
@@ -65,7 +64,6 @@ class MyText {
             options.put(:text,"--");
         }
         mainText.setText(options.get(:text) as String);
-        shadowText.setText(options.get(:text) as String);
     }
 
     public function getText() as String {
@@ -78,21 +76,22 @@ class MyText {
         self.height=dim[1];
         mainText.width=dim[0];
         mainText.height=dim[1];
-        //shadowText.width=dim[0];
-        //shadowText.height=dim[1];
     }
 
     public function setColor(color as Graphics.ColorType) as Void {
         options.put(:color,color);
         mainText.setColor(color);
     }
-    public function setShadowColor(color as Graphics.ColorType) as Void {
-        if(color==null||color==Graphics.COLOR_TRANSPARENT){
-            options.put(:colorshadow,null);
-            shadowText.setVisible(false);
+    public function setShadowColor(colorBefore as Graphics.ColorType,colorAfter as Graphics.ColorType) as Void {
+        if(colorBefore==null||colorBefore==Graphics.COLOR_TRANSPARENT){
+            options.put(:colorShadowBefore,null);
         } else {
-            options.put(:colorshadow,color);
-            shadowText.setVisible(true);
+            options.put(:colorShadowBefore,colorBefore);
+        }
+        if(colorAfter==null||colorAfter==Graphics.COLOR_TRANSPARENT){
+            options.put(:colorShadowAfter,null);
+        } else {
+            options.put(:colorShadowAfter,colorAfter);
         }
         
     }
@@ -102,7 +101,6 @@ class MyText {
     public function setVisible(visible as Boolean) as Void {
         options.put(:visible,visible);
         mainText.setVisible(visible);
-        shadowText.setVisible(visible);
     }
     public function isVisible() as Boolean {
         return options.get(:visible) as Boolean;
@@ -110,7 +108,6 @@ class MyText {
     public function setJustification(justification as TextJustification or Number) as Void {
         options.put(:justification,justification);
         mainText.setJustification(justification);
-        shadowText.setJustification(justification);
     }
     
     public function draw(dc as Dc) as Void {
@@ -118,13 +115,21 @@ class MyText {
         //    dc.drawText(self.locX,self.locY,options.get(:font) as FontType,options.get(:text) as String,options.get(:justification) as TextJustification or Number);
         //}
         if(isVisible()){
-            if(options.get(:colorshadow)!=null){
-                shadowText.setColor(options.get(:colorshadow) as Graphics.ColorType);
-                shadowText.locX=self.locX+options.get(:shiftshadow) as Number;
-                shadowText.locY=self.locY+options.get(:shiftshadow) as Number;
-                //LogMonkey.Debug.logMessage("MyText("+options.get(:text)+").draw()","colorshadow="+options.get(:colorshadow)+", :shiftshadow="+options.get(:shiftshadow)+" ["+shadowText.locX+","+shadowText.locY+"]");
-                shadowText.draw(dc);
+            if(options.get(:colorShadowBefore)!=null){
+                mainText.setColor(options.get(:colorShadowBefore) as Graphics.ColorType);
+                mainText.locX=self.locX-options.get(:shiftShadow) as Number;;
+                mainText.locY=self.locY-options.get(:shiftShadow) as Number;;
+                //LogMonkey.Debug.logMessage("MyText("+options.get(:text)+").draw()","colorshadow="+options.get(:colorshadow)+", :shiftShadow="+options.get(:shiftShadow)+" ["+shadowText.locX+","+shadowText.locY+"]");
+                mainText.draw(dc);
             }
+            if(options.get(:colorShadowAfter)!=null){
+                mainText.setColor(options.get(:colorShadowAfter) as Graphics.ColorType);
+                mainText.locX=self.locX+options.get(:shiftShadow) as Number;;
+                mainText.locY=self.locY+options.get(:shiftShadow) as Number;;
+                //LogMonkey.Debug.logMessage("MyText("+options.get(:text)+").draw()","colorshadow="+options.get(:colorshadow)+", :shiftShadow="+options.get(:shiftShadow)+" ["+shadowText.locX+","+shadowText.locY+"]");
+                mainText.draw(dc);
+            }
+            mainText.setColor(options.get(:color) as Graphics.ColorType);
             mainText.locX=self.locX;
             mainText.locY=self.locY;
             mainText.draw(dc);
