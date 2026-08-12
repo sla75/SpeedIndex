@@ -42,22 +42,10 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
         });
     protected var labels={
-        :topLeft=>new MyText({
-            :color=>Graphics.COLOR_DK_RED,
-            :font=>Graphics.FONT_MEDIUM,
-            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
-            :visible=>false
-        }),
         :topRight=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_RIGHT,
-            :visible=>false
-        }),
-        :bottomLeft=>new MyText({
-            :color=>Graphics.COLOR_DK_BLUE,
-            :font=>Graphics.FONT_MEDIUM,
-            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
             :visible=>false
         }),
         :bottomRight=>new MyText({
@@ -119,17 +107,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         valueArea.locY=dc.getHeight()/2;
         valueArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 
-        labels.get(:topLeft).locX=self.rim;
-        labels.get(:topLeft).locY=self.labelLine;
-        labels.get(:topLeft).setJustification(Graphics.TEXT_JUSTIFY_LEFT);
-
         labels.get(:topRight).locX=dc.getWidth()-self.rim;
         labels.get(:topRight).locY=self.labelLine;
         labels.get(:topRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT);
-
-        labels.get(:bottomLeft).locX=self.rim;
-        labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-Graphics.getFontAscent(Graphics.FONT_SMALL);
-        labels.get(:bottomLeft).setJustification(Graphics.TEXT_JUSTIFY_LEFT);
 
         labels.get(:bottomRight).locX=dc.getWidth()-self.rim;
         labels.get(:bottomRight).locY=dc.getHeight()-self.rim-Graphics.getFontAscent(Graphics.FONT_SMALL);
@@ -167,9 +147,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         self.colors=colors;
         valueArea.setColor(colors.get(:value));
         labelArea.setColor(colors.get(:label));
-        labels.get(:topLeft).setColor(colors.get(:label));
+        //labels.get(:topLeft).setColor(colors.get(:label));
         labels.get(:topRight).setColor(colors.get(:label));
-        labels.get(:bottomLeft).setColor(colors.get(:label));
+        //labels.get(:bottomLeft).setColor(colors.get(:label));
         labels.get(:bottomRight).setColor(colors.get(:label));
     }
     /***
@@ -220,9 +200,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         labelArea.draw(dc);
         if(timer==null||!timer.isExpired()){
             //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()","draw topbottomleftright");
-            labels.get(:topLeft).draw(dc);
             labels.get(:topRight).draw(dc);
-            labels.get(:bottomLeft).draw(dc);
+            //labels.get(:bottomLeft).draw(dc);
             labels.get(:bottomRight).draw(dc);
         }
         onUpdateAfter(dc);

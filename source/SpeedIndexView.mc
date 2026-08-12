@@ -17,6 +17,18 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
     private var textMax as Text;
     private var textAvg as Text;
+    private var valueMax=new MyText({
+            :color=>Graphics.COLOR_DK_RED,
+            :font=>Graphics.FONT_MEDIUM,
+            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
+            :visible=>false
+        }) as MyText;
+    private var valueAvg=new MyText({
+            :color=>Graphics.COLOR_DK_BLUE,
+            :font=>Graphics.FONT_MEDIUM,
+            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
+            :visible=>false
+        }) as MyText;
 
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
@@ -28,9 +40,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
-        labels.get(:topLeft).setVisible(true);
+        valueMax.setVisible(true);
         labels.get(:topRight).setVisible(true);
-        labels.get(:bottomLeft).setVisible(true);
+        valueAvg.setVisible(true);
         labels.get(:bottomRight).setVisible(true);
 
         valueIndex.setVisible(true);
@@ -42,12 +54,14 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         valueIndex.setShiftShadow(2);
 
         //onSettingsChanged();
-        textMax=new Text(labels.get(:topLeft).getOptions());
+        textMax=new Text(valueMax.getOptions());
         textMax.setText("Max");
-        textAvg=new Text(labels.get(:bottomLeft).getOptions());
+        textAvg=new Text(valueAvg.getOptions());
         textAvg.setText("Avg");
         //addDrawable(textMax);
         //addDrawable(textAvg);
+        addDrawable(valueMax);
+        addDrawable(valueAvg);
     }
     /***
     private var sensorSpeed=null as Float or Null;
@@ -71,16 +85,16 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
-            labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
+            valueMax.setFont(Graphics.FONT_SMALL);
+            valueAvg.setFont(Graphics.FONT_MEDIUM);
             centerBottom.setFont(Graphics.FONT_SMALL);
             valueIndex.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_TINY);
             textAvg.setFont(Graphics.FONT_TINY);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
-            labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
-            labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
+            valueMax.setFont(Graphics.FONT_SMALL);
+            valueAvg.setFont(Graphics.FONT_MEDIUM);
             
             centerBottom.setFont(Graphics.FONT_TINY);
             valueIndex.setFont(Graphics.FONT_MEDIUM);
@@ -91,22 +105,30 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         centerBottom.setColor(Graphics.COLOR_DK_GRAY);
         centerBottom.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
 
-        labels.get(:bottomLeft).locY=dc.getHeight()-2-Graphics.getFontHeight(labels.get(:bottomLeft).getFont());
+        valueAvg.locY=dc.getHeight()-2-Graphics.getFontHeight(valueAvg.getFont());
 
-        textMax.setColor(labels.get(:topLeft).getColor());
-        textMax.locX=labels.get(:topLeft).locX;
-        textMax.locY=labels.get(:topLeft).locY-Graphics.getFontHeight(labels.get(:topLeft).getFont());
-        textAvg.setColor(labels.get(:bottomLeft).getColor());
-        textAvg.locX=labels.get(:bottomLeft).locX;
-        textAvg.locY=labels.get(:bottomLeft).locY-Graphics.getFontHeight(labels.get(:bottomLeft).getFont());
+        valueMax.locX=self.rim;
+        valueMax.locY=self.labelLine;
+        valueMax.setShiftShadow(2);
+
+        valueAvg.locX=self.rim;
+        valueAvg.locY=dc.getHeight()-self.rim-Graphics.getFontAscent(valueAvg.getFont());
+        valueAvg.setShiftShadow(2);
+
+        textMax.setColor(valueMax.getColor());
+        textMax.locX=valueMax.locX;
+        textMax.locY=valueMax.locY-Graphics.getFontHeight(valueMax.getFont());
+        textAvg.setColor(valueAvg.getColor());
+        textAvg.locX=valueAvg.locX;
+        textAvg.locY=valueAvg.locY-Graphics.getFontHeight(valueAvg.getFont());
         labels.get(:bottomRight).locY=2;
 
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
         labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
 
         
-        labels.get(:topLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueMax.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueAvg.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
         labels.get(:topRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
         labels.get(:bottomRight).setShadowColor(null,Graphics.COLOR_LT_GRAY);
 
@@ -139,11 +161,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.compute(info);
         colorMode.compute();
         SlavicsSimpleDataField.setColors(colorMode.getColors());
-        info(:topLeft).setColor(Graphics.COLOR_DK_RED);
-        info(:bottomLeft).setColor(Graphics.COLOR_DK_BLUE);
-        setTextInfo(:topLeft,info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
+        valueMax.setColor(Graphics.COLOR_DK_RED);
+        valueAvg.setColor(Graphics.COLOR_DK_BLUE);
+        valueMax.setText(info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
-        setTextInfo(:bottomLeft,info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
+        valueAvg.setText(info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
         //setTextInfo(:topRight,info.timerState==null?"--":TST.get(info.timerState));
         //setTextColor(:topRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
         var speed=0;
