@@ -73,7 +73,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             :justification=>Graphics.TEXT_JUSTIFY_CENTER,
             :visible=>false
         });
-    protected var centerRight=new MyText({
+    protected var valueIndex=new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_LEFT,
@@ -213,9 +213,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         }
         centerBottom.draw(dc);
 
-        centerRight.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
-        centerRight.locY=valueArea.locY-Graphics.getFontHeight(centerRight.getFont());
-        centerRight.draw(dc);
+        valueIndex.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
+        valueIndex.locY=valueArea.locY-Graphics.getFontHeight(valueIndex.getFont());
+        valueIndex.draw(dc);
         valueArea.draw(dc);
         labelArea.draw(dc);
         if(timer==null||!timer.isExpired()){

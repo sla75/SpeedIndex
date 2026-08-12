@@ -124,12 +124,16 @@ class DataStorageGraph {
                 
                 if(dataY<avgY){
                     // Line over average
-                    dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
+                    dc.setColor(ColorMode.COLOR_LT_ORANGE,Graphics.COLOR_TRANSPARENT);
                     dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
+
+                    // Draw AVG point
+                    dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
+                    dc.drawPoint(dc.getWidth()-i,avgY);
                 }
 
                 // Line under average
-                dc.setColor(Graphics.COLOR_YELLOW,Graphics.COLOR_TRANSPARENT);
+                dc.setColor(ColorMode.COLOR_LT_YELLOW,Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(dc.getWidth()-i,dataY>avgY?dataY:avgY,dc.getWidth()-i,dc.getHeight());
                 
             } else {

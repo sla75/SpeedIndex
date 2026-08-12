@@ -33,12 +33,13 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         labels.get(:bottomLeft).setVisible(true);
         labels.get(:bottomRight).setVisible(true);
 
-        centerRight.setVisible(true);
+        valueIndex.setVisible(true);
         centerBottom.setText("km/h");
         centerBottom.setVisible(true);
         valueArea.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        valueArea.setShiftShadow(2);
-        centerRight.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueArea.setShiftShadow(3);
+        valueIndex.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueIndex.setShiftShadow(2);
 
         //onSettingsChanged();
         textMax=new Text(labels.get(:topLeft).getOptions());
@@ -73,7 +74,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
             centerBottom.setFont(Graphics.FONT_SMALL);
-            centerRight.setFont(Graphics.FONT_MEDIUM);
+            valueIndex.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_TINY);
             textAvg.setFont(Graphics.FONT_TINY);
         } else {
@@ -82,7 +83,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
             
             centerBottom.setFont(Graphics.FONT_TINY);
-            centerRight.setFont(Graphics.FONT_MEDIUM);
+            valueIndex.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_XTINY);
             textAvg.setFont(Graphics.FONT_XTINY);
         }
@@ -130,8 +131,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     }
     /***/
     //private static const _TST={Activity.TIMER_STATE_OFF=>"Off",Activity.TIMER_STATE_STOPPED=>"Stop",Activity.TIMER_STATE_PAUSED=>"Pause",Activity.TIMER_STATE_ON=>"On"} as Dictionary<Activity.TimerState,String>;
-    private static const TST={Activity.TIMER_STATE_OFF=>"0",Activity.TIMER_STATE_STOPPED=>"1",Activity.TIMER_STATE_PAUSED=>"2",Activity.TIMER_STATE_ON=>"3"} as Dictionary<Activity.TimerState,String>;
-    private static const TSC={Activity.TIMER_STATE_OFF=>Graphics.COLOR_DK_GRAY,Activity.TIMER_STATE_STOPPED=>Graphics.COLOR_BLACK,Activity.TIMER_STATE_PAUSED=>Graphics.COLOR_ORANGE,Activity.TIMER_STATE_ON=>Graphics.COLOR_DK_GREEN} as Dictionary<Activity.TimerState,ColorType>;
+    //private static const TST={Activity.TIMER_STATE_OFF=>"0",Activity.TIMER_STATE_STOPPED=>"1",Activity.TIMER_STATE_PAUSED=>"2",Activity.TIMER_STATE_ON=>"3"} as Dictionary<Activity.TimerState,String>;
+    //private static const TSC={Activity.TIMER_STATE_OFF=>Graphics.COLOR_DK_GRAY,Activity.TIMER_STATE_STOPPED=>Graphics.COLOR_BLACK,Activity.TIMER_STATE_PAUSED=>Graphics.COLOR_ORANGE,Activity.TIMER_STATE_ON=>Graphics.COLOR_DK_GREEN} as Dictionary<Activity.TimerState,ColorType>;
     //private var invalidBoardShiftCount=0 as Number;
     function compute(info as Activity.Info) as Void {
         //LogMonkey.Debug.logMessage("SpeedIndexView","compute(speed="+info.currentSpeed+")");
@@ -143,8 +144,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         setTextInfo(:topLeft,info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
         setTextInfo(:bottomLeft,info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
-        setTextInfo(:topRight,info.timerState==null?"--":TST.get(info.timerState));
-        setTextColor(:topRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
+        //setTextInfo(:topRight,info.timerState==null?"--":TST.get(info.timerState));
+        //setTextColor(:topRight,info.timerState==null?Graphics.COLOR_LT_GRAY:TSC.get(info.timerState));
         var speed=0;
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
@@ -179,18 +180,19 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
         valueArea.setVisible(true);
         if(speed>5f&&info.timerState!=Activity.TIMER_STATE_ON&&System.getClockTime().sec%2==1){
+            // Blink if not Timer State On
             valueArea.setVisible(false);
         }
         if(speed>=0){
             setValue(speed.format("%d"));
-            centerRight.setText(((speed-speed.toNumber())*10).toNumber().toString());
+            valueIndex.setText(((speed-speed.toNumber())*10).toNumber().toString());
         } else {
             setValue("--");
-            centerRight.setText("");
+            valueIndex.setText("");
         }
         
-        centerRight.setColor(valueArea.getColor());
-        centerRight.setVisible(valueArea.isVisible());
+        valueIndex.setColor(valueArea.getColor());
+        valueIndex.setVisible(valueArea.isVisible());
 
         centerBottom.setVisible(valueArea.isVisible());
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
