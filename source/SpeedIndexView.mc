@@ -178,7 +178,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //ds.add(15+Math.rand()%10);
         ds.add(speed<0?null:speed);
         ds.setAvg(info.averageSpeed!=null?info.averageSpeed*3.6:null);
-        ds.setAvg(15f);
+        //ds.setAvg(15f);
 
         if(info.timerState==Activity.TIMER_STATE_ON){
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
