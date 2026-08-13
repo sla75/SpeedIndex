@@ -120,33 +120,34 @@ class DataStorageGraph {
 
             dataY=dc.getHeight()-(data[data.size()-1-i]-minMax[0])*koefY;
 
+            dc.setPenWidth(1);
             if(avgY!=null){
                 
+                // Line under average
+                dc.setColor(ColorMode.COLOR_LT_YELLOW,Graphics.COLOR_TRANSPARENT);
+                dc.drawLine(dc.getWidth()-i,dataY>avgY?dataY:avgY,dc.getWidth()-i,dc.getHeight());
+
                 if(dataY<avgY){
-                    // Line over average
+                    // Line above average
                     dc.setColor(ColorMode.COLOR_LT_ORANGE,Graphics.COLOR_TRANSPARENT);
                     dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
 
                     // Draw AVG point
-                    dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
+                    dc.setColor(Graphics.COLOR_DK_BLUE,Graphics.COLOR_TRANSPARENT);
                     dc.drawPoint(dc.getWidth()-i,avgY);
                 }
 
-                // Line under average
-                dc.setColor(ColorMode.COLOR_LT_YELLOW,Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(dc.getWidth()-i,dataY>avgY?dataY:avgY,dc.getWidth()-i,dc.getHeight());
+                
                 
             } else {
                 dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,dc.getHeight());
             }
             
-            
-            
             if(lastXY!=null){
                 // Connector max line with preview
                 dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
-                dc.setPenWidth(3);
+                dc.setPenWidth(1);
                 dc.drawLine(lastXY[0],lastXY[1],dc.getWidth()-i,dataY);
                 if(lastXY[2]==1){
                     dc.setColor(Graphics.COLOR_DK_RED,Graphics.COLOR_TRANSPARENT);

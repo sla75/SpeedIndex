@@ -40,9 +40,20 @@ class MyText {
     public function setShiftShadow(shiftShadow as Number) as Void {
         options.put(:shiftShadow,shiftShadow);
     }
+    
     public function getFont() as FontType {
         return options.get(:font) as FontType ;
     }
+    public function getFontHeight() as Number {
+        return Graphics.getFontHeight(getFont());
+    }
+    public function getFontAscent() as Number {
+        return Graphics.getFontAscent(getFont());
+    }
+    public function getFontDescent() as Number {
+        return Graphics.getFontDescent(getFont());
+    }
+
     public function getOptions() as Dictionary {
         return options;
     }

@@ -32,7 +32,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             :text=>"",
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_SMALL,
-            :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
+            :justification => Graphics.TEXT_JUSTIFY_CENTER,
         });
     protected var valueArea=new MyText({
             :text=>"",
@@ -40,22 +40,36 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             //:font=>FONTS,
             :font=>Graphics.FONT_NUMBER_THAI_HOT,
             :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER,
+            :colorShadowBefore=>Graphics.COLOR_WHITE,
+            :colorShadowAfter=>Graphics.COLOR_LT_GRAY,
         });
     protected var labels={
+        :topLeft=>new MyText({
+            :color=>Graphics.COLOR_DK_RED,
+            :font=>Graphics.FONT_MEDIUM,
+            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
+            :visible=>false,
+        }),
         :topRight=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_RIGHT,
-            :visible=>false
+            :visible=>false,
+        }),
+        :bottomLeft=>new MyText({
+            :color=>Graphics.COLOR_DK_BLUE,
+            :font=>Graphics.FONT_MEDIUM,
+            :justification=>Graphics.TEXT_JUSTIFY_LEFT,
+            :visible=>false,
         }),
         :bottomRight=>new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_MEDIUM,
             :justification=>Graphics.TEXT_JUSTIFY_RIGHT,
-            :visible=>false
+            :visible=>false,
         }),
     } as Dictionary<Symbol,MyText>;
-    protected var centerBottom=new MyText({
+    protected var bottomLabel=new MyText({
             :color=>Graphics.COLOR_DK_GRAY,
             :font=>Graphics.FONT_TINY,
             :justification=>Graphics.TEXT_JUSTIFY_CENTER,
@@ -86,34 +100,26 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     function onLayout(dc as Dc) as Void {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onLayout()",dc.getWidth()+"x"+dc.getHeight());
         rim=dc.getHeight()*0.02f;
-        labelLine=Graphics.getFontHeight(labelArea.getFont())*1.1;
+        labelLine=labelArea.getFontHeight()*1.1;
         labelArea.locX=dc.getWidth()/2;
-        labelArea.locY=labelLine-Graphics.getFontHeight(labelArea.getFont());
-        //labelArea.width=dc.getWidth()-2*rim;
-        //labelArea.height=labelLine*1.333f;
-        //labelArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
-        labelArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER);
+        labelArea.locY=labelLine-labelArea.getFontHeight();
 
-        /***
-        //valueArea.locX=0;
-        //valueArea.locY=labelLine;
-        valueArea.width=dc.getWidth();
-        valueArea.height=dc.getHeight()-labelLine*0.667f;
-
-        valueArea.locX=valueArea.width/2;
-        valueArea.locY=labelLine+valueArea.height/2;
-        /***/
         valueArea.locX=dc.getWidth()/2;
         valueArea.locY=dc.getHeight()/2;
         valueArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 
+        labels.get(:topLeft).locX=self.rim;
+        labels.get(:topLeft).locY=self.labelLine;
+
         labels.get(:topRight).locX=dc.getWidth()-self.rim;
         labels.get(:topRight).locY=self.labelLine;
-        labels.get(:topRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT);
+
+        labels.get(:bottomLeft).locX=self.rim;
+        labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
 
         labels.get(:bottomRight).locX=dc.getWidth()-self.rim;
-        labels.get(:bottomRight).locY=dc.getHeight()-self.rim-Graphics.getFontAscent(Graphics.FONT_SMALL);
-        labels.get(:bottomRight).setJustification(Graphics.TEXT_JUSTIFY_RIGHT);
+        labels.get(:bottomRight).locY=dc.getHeight()-self.rim-labels.get(:bottomRight).getFontAscent();
+
     }
     public function setTimer(duration as Number or Null) as Void {
         LogMonkey.Debug.logVariable("SlavicsSimpleDataField.setTimer()","duration",duration);
@@ -123,7 +129,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
             self.timer=new SlavicsSimpleDataField.Timer(duration);
         }
     }
-    public function info(name as Symbol) as MyText {
+    private function _info(name as Symbol) as MyText {
         return labels.get(name);
     }
     public function setTextInfo(name as Symbol,text as String or Null){
@@ -147,9 +153,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         self.colors=colors;
         valueArea.setColor(colors.get(:value));
         labelArea.setColor(colors.get(:label));
-        //labels.get(:topLeft).setColor(colors.get(:label));
+        labels.get(:topLeft).setColor(colors.get(:label));
         labels.get(:topRight).setColor(colors.get(:label));
-        //labels.get(:bottomLeft).setColor(colors.get(:label));
+        labels.get(:bottomLeft).setColor(colors.get(:label));
         labels.get(:bottomRight).setColor(colors.get(:label));
     }
     /***
@@ -186,12 +192,12 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
 
         //var baseLineY=valueArea.locY-Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2+Graphics.getFontAscent(Graphics.FONT_NUMBER_THAI_HOT);
 
-        centerBottom.locX=valueArea.locX;
-        centerBottom.locY=valueArea.locY+Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2-Graphics.getFontAscent(centerBottom.getFont())/2;
-        if(centerBottom.locY+Graphics.getFontHeight(centerBottom.getFont())>dc.getHeight()){
-            centerBottom.locY=dc.getHeight()-Graphics.getFontHeight(centerBottom.getFont());
+        bottomLabel.locX=valueArea.locX;
+        bottomLabel.locY=valueArea.locY+Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT)/2-bottomLabel.getFontAscent()/2;
+        if(bottomLabel.locY+Graphics.getFontHeight(bottomLabel.getFont())>dc.getHeight()){
+            bottomLabel.locY=dc.getHeight()-bottomLabel.getFontHeight();
         }
-        centerBottom.draw(dc);
+        bottomLabel.draw(dc);
 
         valueIndex.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
         valueIndex.locY=valueArea.locY-Graphics.getFontHeight(valueIndex.getFont());
@@ -200,8 +206,9 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         labelArea.draw(dc);
         if(timer==null||!timer.isExpired()){
             //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()","draw topbottomleftright");
+            labels.get(:topLeft).draw(dc);
             labels.get(:topRight).draw(dc);
-            //labels.get(:bottomLeft).draw(dc);
+            labels.get(:bottomLeft).draw(dc);
             labels.get(:bottomRight).draw(dc);
         }
         onUpdateAfter(dc);
