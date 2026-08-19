@@ -82,17 +82,23 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
             labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
-
+            
+            labelArea.setFont(Graphics.FONT_SMALL);
+            valueArea.setFont(Graphics.FONT_NUMBER_THAI_HOT);
             bottomLabel.setFont(Graphics.FONT_SMALL);
-            valueIndex.setFont(Graphics.FONT_MEDIUM);
+
+            valueIndex.setFont(Graphics.FONT_LARGE);
             textMax.setFont(Graphics.FONT_TINY);
             textAvg.setFont(Graphics.FONT_TINY);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
-            labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
+            labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
-            
+
+            labelArea.setFont(Graphics.FONT_TINY);
+            valueArea.setFont(Graphics.FONT_NUMBER_HOT);
             bottomLabel.setFont(Graphics.FONT_TINY);
+
             valueIndex.setFont(Graphics.FONT_MEDIUM);
             textMax.setFont(Graphics.FONT_XTINY);
             textAvg.setFont(Graphics.FONT_XTINY);

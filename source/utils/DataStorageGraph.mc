@@ -10,7 +10,7 @@ class DataStorageGraph {
     private var average=null as Numeric or Null;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
-    private var colors={:line=>ColorMode.COLOR_LT_YELLOW,:value=>ColorMode.COLOR_LT_ORANGE,:minmax=>Graphics.COLOR_BLACK} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
@@ -57,12 +57,12 @@ class DataStorageGraph {
             }
             if(minMax==null){
                 minMax=[data[i],minMaximumGraphValue] as [Numeric,Numeric];
-                continue;
-            }
-            if(minMax[0]>value){
-                minMax[0]=data[i];
-            } else if(minMax[1]<data[i]){
-                minMax[1]=data[i];
+            } else {
+                if(minMax[0]>value){
+                    minMax[0]=data[i];
+                } else if(minMax[1]<data[i]){
+                    minMax[1]=data[i];
+                }
             }
         }
         return minMax;
@@ -114,53 +114,56 @@ class DataStorageGraph {
             //LogMonkey.Debug.logMessage("DataStorage.draw()","dc.drawLine("+i+") koefY="+koefY+", minMax[0]="+minMax[0]);
             //LogMonkey.Debug.logVariable("DataStorage.draw()","data",data);
             //LogMonkey.Debug.logVariable("DataStorage.draw()","data["+(data.size()-1-i)+"]",data[data.size()-1-i]);
+
             // Value line
             dc.setPenWidth(1);
-            dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
+            //dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
 
             dataY=dc.getHeight()-(data[data.size()-1-i]-minMax[0])*koefY;
 
-            dc.setPenWidth(1);
             if(avgY!=null){
                 
                 // Line under average
-                dc.setColor(ColorMode.COLOR_LT_YELLOW,Graphics.COLOR_TRANSPARENT);
+                dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(dc.getWidth()-i,dataY>avgY?dataY:avgY,dc.getWidth()-i,dc.getHeight());
 
                 if(dataY<avgY){
                     // Line above average
-                    dc.setColor(ColorMode.COLOR_LT_ORANGE,Graphics.COLOR_TRANSPARENT);
+                    dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
                     dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
 
                     // Draw AVG point
-                    dc.setColor(Graphics.COLOR_DK_BLUE,Graphics.COLOR_TRANSPARENT);
+                    dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
                     dc.drawPoint(dc.getWidth()-i,avgY);
                 }
 
                 
                 
             } else {
-                dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
+                dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,dc.getHeight());
             }
-            
+
             if(lastXY!=null){
                 // Connector max line with preview
-                dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
-                dc.setPenWidth(1);
+                dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(lastXY[0],lastXY[1],dc.getWidth()-i,dataY);
+                /***
                 if(lastXY[2]==1){
-                    dc.setColor(Graphics.COLOR_DK_RED,Graphics.COLOR_TRANSPARENT);
-                    dc.fillCircle(lastXY[0],lastXY[1],5);
+                    
                 }
-            }            
+                /***/
+            }
             
-            dc.setPenWidth(1);
             lastXY=[dc.getWidth()-i,dataY,0] as Array<Numeric>;
 
+            /***
             if(data[data.size()-1-i]==minMax[1]){
-                lastXY[2]=1;
+                // Draw Max point value
+                    dc.setColor(colors.get(:max),Graphics.COLOR_TRANSPARENT);
+                    dc.fillCircle(dc.getWidth()-i,dataY,5);
             }
+            /***/
         }
 
     }
