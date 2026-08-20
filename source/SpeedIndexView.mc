@@ -12,11 +12,9 @@ import LogMonkey;
 class SpeedIndexView extends SlavicsSimpleDataField {
 
     private var colorMode=new ColorMode() as ColorMode;
-    private var debugMode=false as Boolean;
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
-    private var textMax as Text;
-    private var textAvg as Text;
+    private var speedChar=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
 
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
@@ -31,17 +29,19 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
-        labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
+        speedChar.setFont(WatchUi.loadResource(Rez.Fonts.Icons));
+        speedChar.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        //labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
 
         labels.get(:topLeft).setVisible(true);
         labels.get(:topRight).setVisible(true);
         labels.get(:bottomLeft).setVisible(true);
-        labels.get(:bottomRight).setVisible(true);
+        //labels.get(:bottomRight).setVisible(true);
 
         labels.get(:topLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
         labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
         labels.get(:topRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        labels.get(:bottomRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        //labels.get(:bottomRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
 
         bottomLabel.setText("km/h");
         bottomLabel.setVisible(true);
@@ -54,25 +54,18 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         valueIndex.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
         valueIndex.setShiftShadow(2);
 
-        //onSettingsChanged();
-        textMax=new Text(labels.get(:topLeft).getOptions());
-        textMax.setText("Max");
-        textAvg=new Text(labels.get(:bottomLeft).getOptions());
-        textAvg.setText("Avg");
-        //addDrawable(textMax);
-        //addDrawable(textAvg);
+        onSettingsChanged();
+        
         //addDrawable(valueMax);
         //addDrawable(valueAvg);
+        addDrawable(speedChar);
     }
     
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
-        if(Application.loadResource(Rez.Strings.AppName).equals("SpeedIndexDev")){
-            debugMode=!debugMode;
-            LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","Rez.Strings.AppName="+Application.loadResource(Rez.Strings.AppName)+" REVERSE debugMode="+debugMode);
-        }
+
         ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
-        colorMode.handleSettingUpdate();
+        //colorMode.handleSettingUpdate();
         ds.handleSettingUpdate();
     }
 
@@ -80,7 +73,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
-            labels.get(:topLeft).setFont(Graphics.FONT_SMALL);
+            labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
             
             labelArea.setFont(Graphics.FONT_SMALL);
@@ -88,8 +81,6 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             bottomLabel.setFont(Graphics.FONT_SMALL);
 
             valueIndex.setFont(Graphics.FONT_LARGE);
-            textMax.setFont(Graphics.FONT_TINY);
-            textAvg.setFont(Graphics.FONT_TINY);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
@@ -100,8 +91,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             bottomLabel.setFont(Graphics.FONT_TINY);
 
             valueIndex.setFont(Graphics.FONT_MEDIUM);
-            textMax.setFont(Graphics.FONT_XTINY);
-            textAvg.setFont(Graphics.FONT_XTINY);
+
         }
 
         SlavicsSimpleDataField.onLayout(dc);        
@@ -114,17 +104,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
-
-        textMax.setColor(labels.get(:topLeft).getColor());
-        textMax.locX=labels.get(:topLeft).locX;
-        textMax.locY=labels.get(:topLeft).locY-labels.get(:topLeft).getFontHeight();
-
-        textAvg.setColor(labels.get(:bottomLeft).getColor());
-        textAvg.locX=labels.get(:bottomLeft).locX;
-        textAvg.locY=labels.get(:bottomLeft).locY-labels.get(:bottomLeft).getFontHeight();
-        labels.get(:bottomRight).locY=2;
-
+        labels.get(:topRight).locY=2;
         valueArea.setColor(Graphics.COLOR_BLACK);
+
+        speedChar.locX=labels.get(:bottomLeft).locX+dc.getTextWidthInPixels("0.00",labels.get(:bottomLeft).getFont())/2;
+        speedChar.locY=valueArea.locY;
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -164,27 +148,41 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo().speed;
-            setTextColor(:bottomRight,Graphics.COLOR_DK_BLUE);
-            setTextInfo(:bottomRight,"B");
-            //valueArea.setColor(Graphics.COLOR_DK_BLUE);
+            setTextColor(:topRight,Graphics.COLOR_DK_BLUE);
+            setTextInfo(:topRight,"B");
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
             speed=info.currentSpeed==null?-1:info.currentSpeed;
-            setTextColor(:bottomRight,Graphics.COLOR_BLACK);
-            //setTextInfo(:bottomRight,"GPS");
-            setTextInfo(:bottomRight,"G");
-            //valueArea.setColor(Graphics.COLOR_BLACK);        
+            setTextColor(:topRight,Graphics.COLOR_BLACK);
+            setTextInfo(:topRight,"G");
         }
+
         //speed=Math.rand()%200/10;
         if(speed!=null){
+            if(info.averageSpeed!=null){
+                if(speed-info.averageSpeed>0.28f){
+                    speedChar.setVisible(true);
+                    speedChar.setColor(Graphics.COLOR_DK_RED);
+                    speedChar.setText("}");
+                } else if(info.averageSpeed-speed>0.28f){
+                    speedChar.setVisible(true);
+                    speedChar.setColor(Graphics.COLOR_DK_BLUE);
+                    speedChar.setText("{");
+                } else {
+                    speedChar.setVisible(false);    
+                }
+            } else {
+                speedChar.setVisible(false);
+            }
             speed*=3.6f;
         } else {
             speed=-1;
+            speedChar.setVisible(false);
         }
         //ds.add(15+Math.rand()%10);
         ds.add(speed<0?null:speed);
         ds.setAvg(info.averageSpeed!=null?info.averageSpeed*3.6:null);
-        //ds.setAvg(15f);
+        ds.setAvg(15f); //TODO
 
         if(info.timerState==Activity.TIMER_STATE_ON){
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
@@ -204,7 +202,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             setValue("--");
             valueIndex.setText("");
         }
-        
+
         valueIndex.setColor(valueArea.getColor());
         valueIndex.setVisible(valueArea.isVisible());
 

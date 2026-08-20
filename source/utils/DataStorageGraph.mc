@@ -10,7 +10,7 @@ class DataStorageGraph {
     private var average=null as Numeric or Null;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
-    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_TRANSPARENT,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
@@ -133,8 +133,10 @@ class DataStorageGraph {
                     dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
 
                     // Draw AVG point
-                    dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
-                    dc.drawPoint(dc.getWidth()-i,avgY);
+                    if(colors.get(:avg)!=null||colors.get(:avg)!=Graphics.COLOR_TRANSPARENT){
+                        dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
+                        dc.drawPoint(dc.getWidth()-i,avgY);
+                    }
                 }
 
                 
