@@ -6,16 +6,17 @@ import LogMonkey;
 class DataStorageGraph {
 
     private var data as Array<Numeric or Null>;
+    private var data2 as Array<Numeric or Null>;
     private var maxSize as Number;
-    private var average=null as Numeric or Null;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
-    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_TRANSPARENT,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
         self.maxSize=size;
-        data=[] as Array<Numeric>;
+        data=[] as Array<Numeric or Null>;
+        data2=[] as Array<Numeric or Null>;
         Properties.setValue("property_minMaxSpeed",Properties.getValue("property_minMaxSpeed")==null?30:Properties.getValue("property_minMaxSpeed") as Number);
         handleSettingUpdate();
     }
@@ -33,14 +34,15 @@ class DataStorageGraph {
     }
     function add(numeric as Numeric or Null) as Void {
         if(data.size()>=maxSize){
-            //suma-=data[0];
             data=data.slice(1,null);
         }
         data.add(numeric);
-        //suma+=numeric;
     }
-    function setAvg(avg as Numeric or Null) as Void {
-        self.average=avg;
+    function add2(numeric as Numeric or Null) as Void {
+        if(data2.size()>=maxSize){
+            data2=data2.slice(1,null);
+        }
+        data2.add(numeric);
     }
 
     function getMinMax(size as Number) as [Numeric,Numeric] or Null{
@@ -68,17 +70,6 @@ class DataStorageGraph {
         return minMax;
     }
 
-    private function X_getAverage(size as Number) as Numeric or Null{
-        var suma=0;
-        var dataSize=0;
-        for(var i=data.size()-1;i>=data.size()-size;i--){
-            if(data[i]!=null){
-                suma+=data[i];
-                dataSize++;
-            }
-        }
-        return dataSize==0?null:suma/dataSize.toFloat();
-    }
     function size() as Number {
         return data.size();
     }
@@ -100,8 +91,9 @@ class DataStorageGraph {
         var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
         LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
         var lastXY=null as Array<Numeric> or Null;
-        var avgY=self.average!=null?dc.getHeight()-(self.average-minMax[0])*koefY:null;
+        var avgY=null;
         var dataY=0;
+
         for(var i=0;i<data.size();i++){
             if(data[data.size()-1-i]==null||i>dc.getWidth()){
                 lastXY=null;
@@ -120,6 +112,11 @@ class DataStorageGraph {
             //dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
 
             dataY=dc.getHeight()-(data[data.size()-1-i]-minMax[0])*koefY;
+            if(data2.size()>0&&data2[data2.size()-1-i]!=null){
+                avgY=dc.getHeight()-(data2[data2.size()-1-i]-minMax[0])*koefY;
+            } else {
+                avgY=null;
+            }
 
             if(avgY!=null){
                 
@@ -131,15 +128,13 @@ class DataStorageGraph {
                     // Line above average
                     dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
                     dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
-
-                    // Draw AVG point
-                    if(colors.get(:avg)!=null||colors.get(:avg)!=Graphics.COLOR_TRANSPARENT){
-                        dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
-                        dc.drawPoint(dc.getWidth()-i,avgY);
-                    }
                 }
 
-                
+                // Draw AVG point
+                if(colors.get(:avg)!=null||colors.get(:avg)!=Graphics.COLOR_TRANSPARENT){
+                    dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
+                    dc.drawPoint(dc.getWidth()-i,avgY);
+                }                
                 
             } else {
                 dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
