@@ -218,7 +218,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     }
     (:debug)
     private function onUpdateAfter(dc as Dc) as Void {
-
+        dc.setPenWidth(1);
         dc.setColor(Graphics.COLOR_YELLOW,Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(labelArea.locX,labelArea.locY,labelArea.width,labelArea.height);
         dc.drawLine(labelArea.locX,labelArea.locY+labelArea.height/2,labelArea.locX+labelArea.width,labelArea.locY+labelArea.height/2);

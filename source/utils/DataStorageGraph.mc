@@ -10,7 +10,7 @@ class DataStorageGraph {
     private var maxSize as Number;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
-    private var colors={:lineLow=>ColorMode.COLOR_LT_YELLOW,:lineHight=>ColorMode.COLOR_LT_ORANGE,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_BLUE,:lineHight=>ColorMode.COLOR_LT_RED,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
@@ -90,15 +90,17 @@ class DataStorageGraph {
         }
         var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
         LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
-        var lastXY=null as Array<Numeric> or Null;
+        var lastXY1=null as Array<Numeric> or Null;
+        var lastXY2=null as Array<Numeric> or Null;
         var avgY=null;
         var dataY=0;
 
         for(var i=0;i<data.size();i++){
             if(data[data.size()-1-i]==null||i>dc.getWidth()){
-                lastXY=null;
+                lastXY1=null;
                 continue;
             }
+            
             //if(lastXY==null){
             //    lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
             //}
@@ -132,27 +134,31 @@ class DataStorageGraph {
 
                 // Draw AVG point
                 if(colors.get(:avg)!=null||colors.get(:avg)!=Graphics.COLOR_TRANSPARENT){
+                    dc.setPenWidth(2);
                     dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
                     dc.drawPoint(dc.getWidth()-i,avgY);
+                    dc.setPenWidth(1);
                 }                
-                
+                if(lastXY2!=null){
+                    // Connector max line with preview
+                    dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
+                    dc.drawLine(lastXY2[0],lastXY2[1],dc.getWidth()-i,avgY);
+                }    
             } else {
                 dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
                 dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,dc.getHeight());
             }
 
-            if(lastXY!=null){
+            if(lastXY1!=null){
                 // Connector max line with preview
+                dc.setPenWidth(2);
                 dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(lastXY[0],lastXY[1],dc.getWidth()-i,dataY);
-                /***
-                if(lastXY[2]==1){
-                    
-                }
-                /***/
+                dc.drawLine(lastXY1[0],lastXY1[1],dc.getWidth()-i,dataY);
             }
             
-            lastXY=[dc.getWidth()-i,dataY,0] as Array<Numeric>;
+            
+            lastXY1=[dc.getWidth()-i,dataY,0] as Array<Numeric>;
+            lastXY2=[dc.getWidth()-i,avgY,0] as Array<Numeric>;
 
             /***
             if(data[data.size()-1-i]==minMax[1]){

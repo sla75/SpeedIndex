@@ -9,6 +9,8 @@ class ColorMode {
         COLOR_VD_BLUE=0x313152,
         COLOR_LT_ORANGE=0xFFA376,   // ORANGE FF5500
         COLOR_LT_YELLOW=0xFFD186,    // YELLOW FFAA00
+        COLOR_LT_BLUE=0x89D8FF,    // BLUE 00AAFF
+        COLOR_LT_RED=0xFF8989,    // RED FF0000
     }
     
     public var isNight=false as Boolean;
