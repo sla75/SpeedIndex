@@ -5,8 +5,9 @@ import LogMonkey;
 
 class DataStorageGraph {
 
-    private var data as Array<Numeric or Null>;
-    private var data2 as Array<Numeric or Null>;
+    private var points as Array<Point12 or Null>;
+    //private var data as Array<Numeric or Null>;
+    //private var data2 as Array<Numeric or Null>;
     private var maxSize as Number;
     private var minMaximumGraphValue=30 as Number;
     private var visible=true as Boolean;
@@ -15,8 +16,9 @@ class DataStorageGraph {
     function initialize(size as Number) {
         LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
         self.maxSize=size;
-        data=[] as Array<Numeric or Null>;
-        data2=[] as Array<Numeric or Null>;
+        points=[] as Array<Point12 or Null>;
+        //data=[] as Array<Numeric or Null>;
+        //data2=[] as Array<Numeric or Null>;
         Properties.setValue("property_minMaxSpeed",Properties.getValue("property_minMaxSpeed")==null?30:Properties.getValue("property_minMaxSpeed") as Number);
         handleSettingUpdate();
     }
@@ -32,38 +34,33 @@ class DataStorageGraph {
     function setVisible(visible as Boolean) as Void {
         self.visible=visible;
     }
-    function add(numeric as Numeric or Null) as Void {
-        if(data.size()>=maxSize){
-            data=data.slice(1,null);
+    function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
+        if(points.size()>=maxSize){
+            points=points.slice(1,null);
         }
-        data.add(numeric);
-    }
-    function add2(numeric as Numeric or Null) as Void {
-        if(data2.size()>=maxSize){
-            data2=data2.slice(1,null);
-        }
-        data2.add(numeric);
+        points.add(new Point12(numeric1,numeric2));
     }
 
+    (:typecheck(false))
     function getMinMax(size as Number) as [Numeric,Numeric] or Null{
         var minMax=null;
         var value;
-        for(var i=data.size()-1;i>=data.size()-size;i--){
+        for(var i=points.size()-1;i>=points.size()-size;i--){
             if(i<0){
                 break;
             }
-            value=data[i];
+            value=points[i].value1;
             //LogMonkey.Debug.logVariable("DataStorage.getMinMax("+size+")","data["+i+"]",data[i]);
             if(value==null){
                 continue;
             }
             if(minMax==null){
-                minMax=[data[i],minMaximumGraphValue] as [Numeric,Numeric];
+                minMax=[value,minMaximumGraphValue] as [Numeric,Numeric];
             } else {
                 if(minMax[0]>value){
-                    minMax[0]=data[i];
-                } else if(minMax[1]<data[i]){
-                    minMax[1]=data[i];
+                    minMax[0]=value;
+                } else if(minMax[1]<value){
+                    minMax[1]=value;
                 }
             }
         }
@@ -71,7 +68,7 @@ class DataStorageGraph {
     }
 
     function size() as Number {
-        return data.size();
+        return points.size();
     }
 
     function draw(dc as Dc,locX as Number) as Void {
@@ -90,16 +87,15 @@ class DataStorageGraph {
         }
         var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
         LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
-        var lastXY1=null as Array<Numeric> or Null;
-        var lastXY2=null as Array<Numeric> or Null;
-        var avgY=null;
-        var dataY=0;
 
-        for(var i=0;i<data.size();i++){
-            if(data[data.size()-1-i]==null||i>dc.getWidth()){
-                lastXY1=null;
-                continue;
+        var draw12=new Point12(null,null);
+        var last1=new Point12(null,null);
+        var last2=new Point12(null,null);
+        for(var i=0;i<points.size();i++){
+            if(i>dc.getWidth()){
+                break;
             }
+            
             
             //if(lastXY==null){
             //    lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
@@ -112,66 +108,102 @@ class DataStorageGraph {
             // Value line
             dc.setPenWidth(1);
             //dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
-
-            dataY=dc.getHeight()-(data[data.size()-1-i]-minMax[0])*koefY;
-            if(data2.size()>0&&data2[data2.size()-1-i]!=null){
-                avgY=dc.getHeight()-(data2[data2.size()-1-i]-minMax[0])*koefY;
+            
+            //Compute 1. value
+            if(points[points.size()-1-i].value1!=null){
+                draw12.value1=dc.getHeight()-(points[points.size()-1-i].value1-minMax[0])*koefY;
             } else {
-                avgY=null;
+                draw12.value1=null;
             }
 
-            if(avgY!=null){
-                
-                // Line under average
-                dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(dc.getWidth()-i,dataY>avgY?dataY:avgY,dc.getWidth()-i,dc.getHeight());
+            //Compute 2. value
+            if(points[points.size()-1-i].value2!=null){
+                draw12.value2=dc.getHeight()-(points[points.size()-1-i].value2-minMax[0])*koefY;
+            } else {
+                draw12.value2=null;
+            }
 
-                if(dataY<avgY){
-                    // Line above average
-                    dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
-                    dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,avgY);
-                }
+            if(draw12.value1!=null){
+                    
 
-                // Draw AVG point
-                if(colors.get(:avg)!=null||colors.get(:avg)!=Graphics.COLOR_TRANSPARENT){
+                    if(draw12.value2!=null){
+                        if(draw12.value2<draw12.value1){
+                            // Line under average
+                            dc.setPenWidth(1);
+                            dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,draw12.value1,dc.getWidth()-i,dc.getHeight());
+
+                        } else {
+                            // Line under average
+                            dc.setPenWidth(1);
+                            dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,draw12.value2,dc.getWidth()-i,dc.getHeight());
+
+                            // Line above average
+                            dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,draw12.value2,dc.getWidth()-i,draw12.value1);
+                        }
+                    }
+                    // Draw Value point
+                    // TODO abov and underline different colors
+                    dc.setPenWidth(2);
+                    dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
+
+                    if(last2.value2!=null){
+                        dc.drawLine(last1.value1,last1.value2,dc.getWidth()-i,draw12.value1);
+                    } else {
+                        dc.drawPoint(dc.getWidth()-i,draw12.value1);
+                    }
+
+
+            }
+
+            last1.value1=dc.getWidth()-i;
+            last1.value2=draw12.value1;
+
+            if(draw12.value2!=null){
+                    // AVG Point
                     dc.setPenWidth(2);
                     dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
-                    dc.drawPoint(dc.getWidth()-i,avgY);
-                    dc.setPenWidth(1);
-                }                
-                if(lastXY2!=null){
-                    // Connector max line with preview
-                    dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
-                    dc.drawLine(lastXY2[0],lastXY2[1],dc.getWidth()-i,avgY);
-                }    
-            } else {
-                dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(dc.getWidth()-i,dataY,dc.getWidth()-i,dc.getHeight());
+                    if(last2.value2!=null){
+                        dc.drawLine(last2.value1,last2.value2,dc.getWidth()-i,draw12.value2);
+                    } else {
+                        dc.drawPoint(dc.getWidth()-i,draw12.value2);
+                    }
             }
-
-            if(lastXY1!=null){
-                // Connector max line with preview
-                dc.setPenWidth(2);
-                dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
-                dc.drawLine(lastXY1[0],lastXY1[1],dc.getWidth()-i,dataY);
-            }
-            
-            
-            lastXY1=[dc.getWidth()-i,dataY,0] as Array<Numeric>;
-            lastXY2=[dc.getWidth()-i,avgY,0] as Array<Numeric>;
-
-            /***
-            if(data[data.size()-1-i]==minMax[1]){
-                // Draw Max point value
-                    dc.setColor(colors.get(:max),Graphics.COLOR_TRANSPARENT);
-                    dc.fillCircle(dc.getWidth()-i,dataY,5);
-            }
-            /***/
+            last2.value1=dc.getWidth()-i;
+            last2.value2=draw12.value2;
         }
 
     }
 
     function toString() as String{
-        return "DataStorage["+maxSize+"/"+data.size()+"]: "+data.toString();
+        return "DataStorage["+maxSize+"/"+points.size()+"]: "+points.toString();
+    }
+
+    (:typecheck(false))
+    class Point12 {
+        public var value1=null as Numeric or Null;
+        public var value2=null as Numeric or Null;
+        private var attributes={} as Dictionary<Symbol,Object>;
+
+        function initialize(numeric1 as Numeric or Null,numeric2 as Numeric or Null) {
+            self.value1=numeric1;
+            self.value2=numeric2;
+        }
+
+        function addAttr(symbol as Symbol, value as Object) as Void {
+            self.attributes.put(symbol, value);
+        }
+
+        function getAttr(symbol as Symbol) as Object {
+            return self.attributes.get(symbol);
+        }
+        function delAttr(symbol as Symbol) as Void {
+            return self.attributes.remove(symbol);
+        }
+        function existsAttr(symbol as Symbol) as Boolean {
+            return self.attributes.get(symbol)!=null;
+        }
     }
 }

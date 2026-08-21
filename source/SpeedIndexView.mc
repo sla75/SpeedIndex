@@ -179,9 +179,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             speed=-1;
             speedChar.setVisible(false);
         }
-        //ds.add(15+Math.rand()%10);
-        ds.add(speed<0?null:speed);
-        ds.add2(info.averageSpeed!=null?info.averageSpeed*3.6:null);
+        
+        // Add values to Graph
+        ds.add(speed<0?null:speed,info.averageSpeed!=null?info.averageSpeed*3.6:null);
 
         if(info.timerState==Activity.TIMER_STATE_ON){
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
