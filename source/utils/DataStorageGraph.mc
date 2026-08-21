@@ -34,11 +34,26 @@ class DataStorageGraph {
     function setVisible(visible as Boolean) as Void {
         self.visible=visible;
     }
+
+    (:release)
     function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
         if(points.size()>=maxSize){
             points=points.slice(1,null);
         }
-        points.add(new Point12(numeric1,numeric2));
+        points.add(new Point12(null,null));
+    }
+
+    (:debug)
+    function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
+        if(points.size()>=maxSize){
+            points=points.slice(1,null);
+        }
+        if(System.getClockTime().sec==13){
+            LogMonkey.Debug.logMessage("DataStorageGraph","new Point12(null,null)");
+            points.add(new Point12(null,null));
+        } else {
+            points.add(new Point12(numeric1,numeric2));
+        }
     }
 
     (:typecheck(false))
@@ -87,6 +102,7 @@ class DataStorageGraph {
         }
         var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
         LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
+        LogMonkey.Debug.logVariable("DataStorage.draw()","points.size()",points.size());
 
         var draw12=new Point12(null,null);
         var last1=new Point12(null,null);
@@ -95,7 +111,6 @@ class DataStorageGraph {
             if(i>dc.getWidth()){
                 break;
             }
-            
             
             //if(lastXY==null){
             //    lastXY=[dc.getWidth()-0,dc.getHeight()-(data[data.size()-1]-mm[0])*k] as Array<Numeric>;
@@ -124,7 +139,6 @@ class DataStorageGraph {
             }
 
             if(draw12.value1!=null){
-                    
 
                     if(draw12.value2!=null){
                         if(draw12.value2<draw12.value1){
@@ -134,14 +148,16 @@ class DataStorageGraph {
                             dc.drawLine(dc.getWidth()-i,draw12.value1,dc.getWidth()-i,dc.getHeight());
 
                         } else {
-                            // Line under average
+                            
                             dc.setPenWidth(1);
-                            dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                            dc.drawLine(dc.getWidth()-i,draw12.value2,dc.getWidth()-i,dc.getHeight());
-
                             // Line above average
                             dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
                             dc.drawLine(dc.getWidth()-i,draw12.value2,dc.getWidth()-i,draw12.value1);
+
+                            // Line under average
+                            dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,draw12.value2,dc.getWidth()-i,dc.getHeight());
+
                         }
                     }
                     // Draw Value point
@@ -149,12 +165,11 @@ class DataStorageGraph {
                     dc.setPenWidth(2);
                     dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
 
-                    if(last2.value2!=null){
-                        dc.drawLine(last1.value1,last1.value2,dc.getWidth()-i,draw12.value1);
-                    } else {
-                        dc.drawPoint(dc.getWidth()-i,draw12.value1);
+                    if(draw12.value2!=null&&last1.value2){
+                        if(draw12.value1<draw12.value2){
+                            dc.drawLine(last1.value1,last1.value2,dc.getWidth()-i,draw12.value1);
+                        }
                     }
-
 
             }
 
@@ -185,13 +200,13 @@ class DataStorageGraph {
     class Point12 {
         public var value1=null as Numeric or Null;
         public var value2=null as Numeric or Null;
-        private var attributes={} as Dictionary<Symbol,Object>;
+        //private var attributes={} as Dictionary<Symbol,Object>;
 
         function initialize(numeric1 as Numeric or Null,numeric2 as Numeric or Null) {
             self.value1=numeric1;
             self.value2=numeric2;
         }
-
+        /***
         function addAttr(symbol as Symbol, value as Object) as Void {
             self.attributes.put(symbol, value);
         }
@@ -205,5 +220,6 @@ class DataStorageGraph {
         function existsAttr(symbol as Symbol) as Boolean {
             return self.attributes.get(symbol)!=null;
         }
+        /***/
     }
 }
