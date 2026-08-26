@@ -21,7 +21,9 @@ class DataStorageGraph {
         //data2=[] as Array<Numeric or Null>;
         Properties.setValue("property_minMaxSpeed",Properties.getValue("property_minMaxSpeed")==null?30:Properties.getValue("property_minMaxSpeed") as Number);
         handleSettingUpdate();
+        
     }
+    
     function handleSettingUpdate() as Void {
         minMaximumGraphValue=Properties.getValue("property_minMaxSpeed");
         if(minMaximumGraphValue==0){
@@ -166,9 +168,8 @@ class DataStorageGraph {
                     dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
 
                     if(draw12.value2!=null&&last1.value2){
-                        if(draw12.value1<draw12.value2){
-                            dc.drawLine(last1.value1,last1.value2,dc.getWidth()-i,draw12.value1);
-                        }
+                        dc.setColor(Graphics.COLOR_DK_RED,Graphics.COLOR_TRANSPARENT);
+                        dc.drawLine(last1.value1,last1.value2,dc.getWidth()-i,draw12.value1);
                     }
 
             }

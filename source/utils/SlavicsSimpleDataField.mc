@@ -108,6 +108,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         valueArea.locY=dc.getHeight()/2;
         valueArea.setJustification(Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
 
+        valueIndex.locY=valueArea.locY-Graphics.getFontAscent(valueIndex.getFont());
+
         labels.get(:topLeft).locX=self.rim;
         labels.get(:topLeft).locY=self.labelLine;
 
@@ -199,8 +201,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         }
         bottomLabel.draw(dc);
 
-        valueIndex.locX=valueArea.locX+dc.getTextWidthInPixels(value,Graphics.FONT_NUMBER_THAI_HOT)/2;
-        valueIndex.locY=valueArea.locY-Graphics.getFontHeight(valueIndex.getFont());
+        valueIndex.locX=valueArea.locX+dc.getTextWidthInPixels(value,valueArea.getFont())/2;
+        valueIndex.setColor(valueArea.getColor());
         valueIndex.draw(dc);
         valueArea.draw(dc);
         labelArea.draw(dc);

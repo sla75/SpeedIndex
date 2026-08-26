@@ -15,6 +15,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
     private var speedChar=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
+    private const COLORS_DEVICE_STATE=[Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_RED] as Array<Graphics.ColorValue>;
+    private const COLORS_POS_QUALITY=[Graphics.COLOR_RED,Graphics.COLOR_DK_RED,Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_GREEN] as Array<Graphics.ColorValue>;
 
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
@@ -59,8 +61,19 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //addDrawable(valueMax);
         //addDrawable(valueAvg);
         addDrawable(speedChar);
+        initLoad();
     }
     
+    (:release)
+    function initLoad() as Void {}
+
+    (:debug)
+    function initLoad() as Void {
+        LogMonkey.Debug.logMessage("DataStorageGraph","initLoad()");
+        ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
+        ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
+        ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
+    }
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
 
@@ -105,7 +118,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
         labels.get(:topRight).locY=2;
-        valueArea.setColor(Graphics.COLOR_BLACK);
+        //valueArea.setColor(Graphics.COLOR_BLACK);
 
         speedChar.locX=labels.get(:bottomLeft).locX+dc.getTextWidthInPixels("0.00",labels.get(:bottomLeft).getFont())/2;
         speedChar.locY=valueArea.locY;
@@ -148,12 +161,22 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speedSensor!=null&&speedSensor.getSpeedInfo()!=null){
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","speedSensor.getSpeedInfo()",speedSensor.getSpeedInfo());
             speed=speedSensor.getSpeedInfo().speed;
-            setTextColor(:topRight,Graphics.COLOR_DK_BLUE);
+            // Wheel
+            if(speedSensor.getDeviceState()!=null&&speedSensor.getDeviceState().state!=null){
+                if(speedSensor.getDeviceState().state==AntPlus.DEVICE_STATE_SEARCHING&&System.getClockTime().sec%2==1){
+                    setTextColor(:topRight,Graphics.COLOR_TRANSPARENT);
+                } else {
+                    setTextColor(:topRight,COLORS_DEVICE_STATE[speedSensor.getDeviceState().state]);
+                }
+            } else {
+                setTextColor(:topRight,ColorMode.COLOR_VD_BLUE);
+            }
             setTextInfo(:topRight,"B");
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
             speed=info.currentSpeed==null?-1:info.currentSpeed;
-            setTextColor(:topRight,Graphics.COLOR_BLACK);
+            // Satellite
+            setTextColor(:topRight,COLORS_POS_QUALITY[info.currentLocationAccuracy==null?0:info.currentLocationAccuracy]);
             setTextInfo(:topRight,"G");
         }
 
@@ -202,7 +225,6 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             valueIndex.setText("");
         }
 
-        valueIndex.setColor(valueArea.getColor());
         valueIndex.setVisible(valueArea.isVisible());
 
         bottomLabel.setVisible(valueArea.isVisible());
