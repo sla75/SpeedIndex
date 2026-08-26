@@ -22,7 +22,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var fps=[] as Array<Array<Graphics.Point2D>>;
     private const SIN60=0.866f;
     private var currentGear=null as Number or Null;
-    private var showRearIndex=false as Boolean;
+    private var showRearIndex=true as Boolean;
+    private var edgeRearIndex=false as Boolean;
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
         PROPERTY_SHOWREARINDEX="property_showRearIndex"
@@ -33,7 +34,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.initialize();
         
         Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
-        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?false:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
+        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?showRearIndex:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
 
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
@@ -281,13 +282,21 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
         if(showRearIndex){
+            /*** DEBUG ***
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
             currentGear=info.rearDerailleurIndex;
-            //currentGear=(Math.rand()%12+1).toString();
-            //currentGear=System.getClockTime().sec==17?null:currentGear;
+            currentGear=Math.rand()%12+1;
+            info.rearDerailleurMax=12;
+            currentGear=System.getClockTime().sec==17?null:currentGear;
+            /***/
             gearNum.setText(currentGear==null?"--":currentGear.toString());
+            if(info.rearDerailleurMax!=null&&(currentGear==1||currentGear==info.rearDerailleurMax)){
+                edgeRearIndex=true;
+            } else {
+                edgeRearIndex=false;
+            }
         }
     }
 
@@ -298,7 +307,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         ds.draw(dc,labelLine);
         //if(show_RearIndex&&currentGear!=null){
         if(showRearIndex){
-            dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);    
+            dc.setColor(edgeRearIndex?Graphics.COLOR_DK_RED:ColorMode.COLOR_VD_BLUE,Graphics.COLOR_TRANSPARENT);    
             for(var i=0;i<fps.size();i++){
                 dc.fillPolygon(fps[i]);
             }

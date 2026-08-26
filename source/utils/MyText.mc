@@ -60,9 +60,14 @@ class MyText {
     public function putOption(symbol as Symbol, value as Object) as Void {
         options.put(symbol,value);
     }
-    public function setText(text as Lang.String or Lang.ResourceId) as Void {
-        if(text instanceof Lang.ResourceId){
+    public function setText(text as Lang.String or Lang.ResourceId or Object) as Void {
+        if(text instanceof String){
+        } else if(text instanceof ResourceId){
             text=Application.loadResource(text);
+        } else if(text has :toString){
+            text=text.toString();
+        } else {
+            text="#N/A";
         }
         options.put(:text,text);
         mainText.setText(text);

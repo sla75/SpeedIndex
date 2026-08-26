@@ -149,3 +149,4 @@ git restore ${APP_FILE}
 # TODO check restore
 grep AppName ${APP_FILE}
 grep version ${APP_FILE}
+echo -n "\nUpload file: bin/${APP_NAME}-${APP_VERSION}.${GITCOUNT}.iq\nVersion: ${APP_VERSION}.${GITCOUNT}\nUrl: https://apps-developer.garmin.com/"
