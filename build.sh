@@ -61,8 +61,8 @@ fi
 
 #set -e # halt on error
 
-GITCOUNT=$(git rev-list --count HEAD)
-GITCOUNT=$(git log "${APP_VERSION}.0"..HEAD | wc -l)
+#GITCOUNT=$(git rev-list --count HEAD)
+GITCOUNT=$(git log --pretty=oneline "${APP_VERSION}.0"..HEAD | wc -l)
 
 echo "Application name=${APP_NAME}, version=${APP_VERSION}.${GITCOUNT} from ${APP_FILE}"
 
