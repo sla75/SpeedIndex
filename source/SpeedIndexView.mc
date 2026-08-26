@@ -120,7 +120,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         labels.get(:topRight).locY=2;
         //valueArea.setColor(Graphics.COLOR_BLACK);
 
-        speedChar.locX=labels.get(:bottomLeft).locX+dc.getTextWidthInPixels("0.00",labels.get(:bottomLeft).getFont())/2;
+        speedChar.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         speedChar.locY=valueArea.locY;
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);

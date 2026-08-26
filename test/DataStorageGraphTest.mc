@@ -7,7 +7,7 @@ class DataStorageGraphTest {
     (:test)
     function dataStorageAddTest(logger) {
         var ds=new DataStorageGraph(5);
-        ds.add(null);
+        ds.add(null,null);
         System.println(ds);
         var minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -17,7 +17,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size())==null?true:false,true);
         Test.assertEqual(ds.size(),1);
 
-        ds.add(5);
+        ds.add(5,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -29,7 +29,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size()),5f);
         Test.assertEqual(ds.size(),2);
 
-        ds.add(9);
+        ds.add(9,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -41,7 +41,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size()),7f);
         Test.assertEqual(ds.size(),3);
 
-        ds.add(null);
+        ds.add(null,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -53,7 +53,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size()),7f);
         Test.assertEqual(ds.size(),4);
 
-        ds.add(13);
+        ds.add(13,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -65,7 +65,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size()),9f);
         Test.assertEqual(ds.size(),5);
 
-        ds.add(2);
+        ds.add(2,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
@@ -77,7 +77,7 @@ class DataStorageGraphTest {
         //Test.assertEqual(ds.getAverage(ds.size()),7.25f);
         Test.assertEqual(ds.size(),5);
 
-        ds.add(4);
+        ds.add(4,5);
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
