@@ -22,7 +22,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var fps=[] as Array<Array<Graphics.Point2D>>;
     private const SIN60=0.866f;
     private var currentGear=null as Number or Null;
-    private var show_RearIndex=false as Boolean;
+    private var showRearIndex=false as Boolean;
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
         PROPERTY_SHOWREARINDEX="property_showRearIndex"
@@ -87,7 +87,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
 
         ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
-        show_RearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
+        showRearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
+        LogMonkey.Debug.logVariable("DataStorageGraph.onSettingsChanged()","showRearIndex",showRearIndex);
         //colorMode.handleSettingUpdate();
         ds.handleSettingUpdate();
     }
@@ -279,11 +280,14 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
-        if(show_RearIndex){
+        if(showRearIndex){
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
             currentGear=info.rearDerailleurIndex;
             //currentGear=(Math.rand()%12+1).toString();
             //currentGear=System.getClockTime().sec==17?null:currentGear;
-            gearNum.setText(currentGear==null?"--":currentGear);
+            gearNum.setText(currentGear==null?"--":currentGear.toString());
         }
     }
 
@@ -293,7 +297,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         dc.clear();
         ds.draw(dc,labelLine);
         //if(show_RearIndex&&currentGear!=null){
-        if(show_RearIndex){
+        if(showRearIndex){
             dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);    
             for(var i=0;i<fps.size();i++){
                 dc.fillPolygon(fps[i]);

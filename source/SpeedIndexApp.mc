@@ -20,7 +20,6 @@ class SpeedIndexApp extends Application.AppBase {
     function getInitialView() as [Views] or [Views, InputDelegates] {
         view=new SpeedIndexView();
         return [ view ];
-        //return [ new SlavicsGearRearSimpleView() ];
     }
 
     function onSettingsChanged() { // triggered by settings change in GCM
