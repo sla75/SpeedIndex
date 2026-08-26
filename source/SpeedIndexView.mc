@@ -281,9 +281,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
-        showRearIndex=true;
+        //showRearIndex=true;
         if(showRearIndex){
-            /*** DEBUG ***/
+            /*** DEBUG ***
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
