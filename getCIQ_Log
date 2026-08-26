@@ -23,4 +23,4 @@ for bmps in $(mtp-filetree | grep "CIQ_LOG"); do
         echo "${bmps}"
     fi
 done;
-echo "find temp~/ -type f -name \"CIQ_LOG.*\" | xargs cat"
+echo -e "find temp~/ -type f -name \"CIQ_LOG.*\" | xargs cat"

@@ -137,7 +137,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         speedChar.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         speedChar.locY=valueArea.locY;
         gearNum.locX=dc.getWidth()-speedChar.locX;
-        gearNum.locY=valueArea.locY;
+        gearNum.locY=valueArea.locY+gearNum.getFontHeight();
 
         var l=dc.getTextWidthInPixels("12",gearNum.getFont());
         dc.setPenWidth(1);
@@ -281,8 +281,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
+        showRearIndex=true;
         if(showRearIndex){
-            /*** DEBUG ***
+            /*** DEBUG ***/
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
