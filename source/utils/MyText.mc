@@ -81,12 +81,13 @@ class MyText {
         return options.get(:text) as String ;
     }
 
-    public function computeDimension(dc as Dc) as Void {
+    public function computeDimension(dc as Dc) as Array<Number> {
         var dim=dc.getTextDimensions(options.get(:text) as String,options.get(:font) as FontType);
         self.width=dim[0];
         self.height=dim[1];
         mainText.width=dim[0];
         mainText.height=dim[1];
+        return dim;
     }
 
     public function setColor(color as Graphics.ColorType) as Void {
@@ -119,6 +120,10 @@ class MyText {
     public function setJustification(justification as TextJustification or Number) as Void {
         options.put(:justification,justification);
         mainText.setJustification(justification);
+    }
+    public function setBackgroundColor(color as Graphics.ColorType) as Void {
+        options.put(:backgroundColor,color);
+        mainText.setBackgroundColor(color);
     }
     
     public function draw(dc as Dc) as Void {

@@ -6,4 +6,6 @@
     <string id="property_showGraph_title">Zobrazit graf rychlosti</string>
     <string id="property_minMaxSpeed">Základní max. rychlost</string>
     <string id="property_minMaxSpeed_title">Základní maximální rychlost v grafu</string>
+    <string id="property_showRearIndex">Zobrazit index přehazovačky</string>
+    <string id="property_showRearIndex_title">Zobrazit index zadní přehazovačky</string>
 </strings>

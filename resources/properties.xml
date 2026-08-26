@@ -12,9 +12,10 @@
         <property id="property_nightMode" type="boolean">false</property-->
         <property id="property_showGraph" type="boolean">true</property>
         <property id="property_minMaxSpeed" type="number">30</property>
+        <property id="property_showRearIndex" type="boolean">false</property>
         <!--property id="property_graphColorMode" type="number">1</property-->
         <!--property id="property_showAdditionalValues" type="number">0</property>
-        <property id="property_numberOfShifts" type="boolean">true</property>
+        
         <property id="property_debugMode" type="boolean">true</property-->
     </properties>
 
@@ -44,6 +45,9 @@
                 <listEntry value="60">60 km/h</listEntry>
                 <listEntry value="70">70 km/h</listEntry>
             </settingConfig>
+        </setting>
+        <setting propertyKey="@Properties.property_showRearIndex" title="@Strings.property_showRearIndex_title">
+            <settingConfig type="boolean" required="true" />
         </setting>
         <!--setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">
             <settingConfig type="list">

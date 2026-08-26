@@ -15,11 +15,17 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
     private var speedChar=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
+    private var gearNum=new MyText({:font=>Graphics.FONT_TINY,:justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
     private const COLORS_DEVICE_STATE=[Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_RED] as Array<Graphics.ColorValue>;
     private const COLORS_POS_QUALITY=[Graphics.COLOR_RED,Graphics.COLOR_DK_RED,Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_GREEN] as Array<Graphics.ColorValue>;
-
+    //private const PIRAD=Math.PI/180f;
+    private var fps=[] as Array<Array<Graphics.Point2D>>;
+    private const SIN60=0.866f;
+    private var currentGear=null as Number or Null;
+    private var show_RearIndex=false as Boolean;
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
+        PROPERTY_SHOWREARINDEX="property_showRearIndex"
     }
 
     function initialize() {
@@ -27,6 +33,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.initialize();
         
         Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
+        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?false:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
 
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
@@ -61,6 +68,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //addDrawable(valueMax);
         //addDrawable(valueAvg);
         addDrawable(speedChar);
+        addDrawable(gearNum);
         initLoad();
     }
     
@@ -70,6 +78,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     (:debug)
     function initLoad() as Void {
         LogMonkey.Debug.logMessage("DataStorageGraph","initLoad()");
+        ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);ds.add(null,15);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
@@ -78,10 +87,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
 
         ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
+        show_RearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
         //colorMode.handleSettingUpdate();
         ds.handleSettingUpdate();
     }
-
+    
     function onLayout(dc as Dc) as Void {
 
         if(dc.getWidth()==System.getDeviceSettings().screenWidth){
@@ -92,6 +102,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labelArea.setFont(Graphics.FONT_SMALL);
             valueArea.setFont(Graphics.FONT_NUMBER_THAI_HOT);
             bottomLabel.setFont(Graphics.FONT_SMALL);
+            gearNum.setFont(Graphics.FONT_MEDIUM);
 
             valueIndex.setFont(Graphics.FONT_LARGE);
         } else {
@@ -99,6 +110,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
 
+            gearNum.setFont(Graphics.FONT_TINY);
             labelArea.setFont(Graphics.FONT_TINY);
             valueArea.setFont(Graphics.FONT_NUMBER_HOT);
             bottomLabel.setFont(Graphics.FONT_TINY);
@@ -112,7 +124,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         bottomLabel.setColor(Graphics.COLOR_DK_GRAY);
         bottomLabel.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
 
-        
+        gearNum.setColor(Graphics.COLOR_WHITE);
         labels.get(:topLeft).setShiftShadow(2);
 
         labels.get(:bottomLeft).locX=self.rim;
@@ -122,6 +134,44 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         speedChar.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         speedChar.locY=valueArea.locY;
+        gearNum.locX=dc.getWidth()-speedChar.locX;
+        gearNum.locY=valueArea.locY;
+
+        var l=dc.getTextWidthInPixels("12",gearNum.getFont());
+        dc.setPenWidth(1);
+        //dim[1]=gearNum.getFontAscent();
+        var y=gearNum.locY-gearNum.getFontDescent()/2;
+        dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
+        
+        fps=[];
+        var lSIN60=l*SIN60;
+        var fp=[] as Array<Graphics.Point2D>;
+        fp.add([gearNum.locX+l,y]);
+        fp.add([gearNum.locX-l/2,y+lSIN60]);
+        fp.add([gearNum.locX-l/2,y-lSIN60]);
+        fp.add(fp[0]);
+        fps.add(fp);
+
+        fp=[] as Array<Graphics.Point2D>;
+        fp.add([gearNum.locX+lSIN60,y+l/2]);
+        fp.add([gearNum.locX-lSIN60,y+l/2]);
+        fp.add([gearNum.locX,y-l]);
+        fp.add(fp[0]);
+        fps.add(fp);
+
+        fp=[] as Array<Graphics.Point2D>;
+        fp.add([gearNum.locX+l/2,y+lSIN60]);
+        fp.add([gearNum.locX-l,y]);
+        fp.add([gearNum.locX+l/2,y-lSIN60]);
+        fp.add(fp[0]);
+        fps.add(fp);
+
+        fp=[] as Array<Graphics.Point2D>;
+        fp.add([gearNum.locX,y+l]);
+        fp.add([gearNum.locX-lSIN60,y-l/2]);
+        fp.add([gearNum.locX+lSIN60,y-l/2]);
+        fp.add(fp[0]);
+        fps.add(fp);
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -229,12 +279,27 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
+        if(show_RearIndex){
+            currentGear=info.rearDerailleurIndex;
+            //currentGear=(Math.rand()%12+1).toString();
+            //currentGear=System.getClockTime().sec==17?null:currentGear;
+            gearNum.setText(currentGear==null?"":currentGear+1);
+        }
     }
 
+    (:typecheck(false))
     public function onUpdate(dc as Dc) as Void {
         dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
         dc.clear();
         ds.draw(dc,labelLine);
+       
+        if(show_RearIndex&&currentGear!=null){
+            dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);    
+            for(var i=0;i<fps.size();i++){
+                dc.fillPolygon(fps[i]);
+            }
+        }
+        
         SlavicsSimpleDataField.onUpdate(dc);
     }
 
