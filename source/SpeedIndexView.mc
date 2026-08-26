@@ -184,7 +184,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         System.println("|FONT_LARGE|"+Graphics.getFontHeight(Graphics.FONT_LARGE)+"|"+Graphics.getFontAscent(Graphics.FONT_LARGE)+"|"+Graphics.getFontDescent(Graphics.FONT_LARGE)+"|");
         /***/
     }
-    /***/
+    /***
     function onShow() {
         LogMonkey.Debug.logMessage("SpeedIndexView","onShow()");
         SlavicsSimpleDataField.onShow();
@@ -283,7 +283,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             currentGear=info.rearDerailleurIndex;
             //currentGear=(Math.rand()%12+1).toString();
             //currentGear=System.getClockTime().sec==17?null:currentGear;
-            gearNum.setText(currentGear==null?"":currentGear+1);
+            gearNum.setText(currentGear==null?"--":currentGear);
         }
     }
 
@@ -292,8 +292,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
         dc.clear();
         ds.draw(dc,labelLine);
-       
-        if(show_RearIndex&&currentGear!=null){
+        //if(show_RearIndex&&currentGear!=null){
+        if(show_RearIndex){
             dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);    
             for(var i=0;i<fps.size();i++){
                 dc.fillPolygon(fps[i]);
