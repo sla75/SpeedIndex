@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+TEMP="temp~"
+[[ -d "${TEMP}" ]] || mkdir ${TEMP}
+
+IFS=$'\n'
+
+#set -e # halt on error
+
+regex_DIR="^\s*([0-9]+)\s(.*)"
+
+for bmps in $(mtp-filetree | grep "CIQ_LOG"); do
+    if [[ ${bmps} =~ ${regex_DIR} ]]; then
+        num="${BASH_REMATCH[1]}"
+        file="${BASH_REMATCH[2]}"
+        #echo "DELETE ${num}. ${file}"
+        echo mtp-getfile ${num} "${TEMP}/${file}"
+        mtp-getfile ${num} "${TEMP}/${file}" || echo "Old version not found!"
+        mtp-delfile -n ${num}
+        echo -e "\nFile: ${file}""
+        cat "${TEMP}/${file}"
+    else
+        echo "${bmps}"
+    fi
+done;
+echo "find temp~/ -type f -name \"CIQ_LOG.*\" | xargs cat"
