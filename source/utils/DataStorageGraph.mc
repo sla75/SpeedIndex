@@ -41,10 +41,10 @@ class DataStorageGraph {
 
     (:release)
     function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
-        if(points.size()>=maxSize){
-            points=points.slice(1,null);
+        if(data.size()>=maxSize){
+            data=data.slice(1,null);
         }
-        points.add(new Point12(null,null));
+        data.add([numeric1,numeric2] as NumArray);
     }
 
     (:debug)
