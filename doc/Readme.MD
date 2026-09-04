@@ -1,5 +1,5 @@
 # Dashboard
-<a href="https://apps.garmin.com/developer/dashboard" target="_blank">Dashboard developer</a>
+<a href="https://apps.garmin.com/cs-CZ/developer/dashboard" target="_blank">Dashboard developer</a>
 
 # Publish Garmin App
 https://developer.garmin.com/connect-iq/core-topics/publishing-to-the-store/
