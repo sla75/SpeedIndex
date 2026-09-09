@@ -140,7 +140,7 @@ class DataStorageGraph {
 
                         // Line under average
                         dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                        dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,dc.getHeight());
+                        dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
 
                     } else {
 
