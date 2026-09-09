@@ -287,11 +287,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
-            currentGear=info.rearDerailleurIndex;
             currentGear=Math.rand()%12+1;
             info.rearDerailleurMax=12;
             currentGear=System.getClockTime().sec==17?null:currentGear;
             /***/
+            currentGear=info.rearDerailleurIndex;
             gearNum.setText(currentGear==null?"--":currentGear.toString());
             if(info.rearDerailleurMax!=null&&(currentGear==1||currentGear==info.rearDerailleurMax)){
                 edgeRearIndex=true;
