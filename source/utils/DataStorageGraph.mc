@@ -20,15 +20,11 @@ class DataStorageGraph {
         self.maxSize=size;
         //points=[] as Array<NumArray>;
         data=new Array<NumArray>[size];
-        
-        Properties.setValue("property_minMaxSpeed",Properties.getValue("property_minMaxSpeed")==null?30:Properties.getValue("property_minMaxSpeed") as Number);
-        handleSettingUpdate();
-        
     }
     
-    function handleSettingUpdate() as Void {
-        minMaximumGraphValue=Properties.getValue("property_minMaxSpeed");
-        if(minMaximumGraphValue==0){
+    function setMinMaxSpeedGraph(minMaxSpeed as Numeric) as Void {
+        self.minMaximumGraphValue=minMaxSpeed;
+        if(self.minMaximumGraphValue<=0){
             minMaximumGraphValue=-99999;
         }
     }

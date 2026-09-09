@@ -26,7 +26,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var edgeRearIndex=false as Boolean;
     private enum {
         PROPERTY_SHOWGRAPH="property_showGraph",
-        PROPERTY_SHOWREARINDEX="property_showRearIndex"
+        PROPERTY_SHOWREARINDEX="property_showRearIndex",
+        PROPERTY_MINMAXSPEED="property_minMaxSpeed"
     }
 
     function initialize() {
@@ -35,6 +36,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         
         Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?showRearIndex:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
+        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?30:Properties.getValue(PROPERTY_SHOWREARINDEX) as Number);
 
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
@@ -91,7 +93,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         showRearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
         LogMonkey.Debug.logVariable("DataStorageGraph.onSettingsChanged()","showRearIndex",showRearIndex);
         //colorMode.handleSettingUpdate();
-        ds.handleSettingUpdate();
+        ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
     }
     
     function onLayout(dc as Dc) as Void {
