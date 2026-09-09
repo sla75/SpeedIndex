@@ -25,7 +25,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var showRearIndex=true as Boolean;
     private var edgeRearIndex=false as Boolean;
     private enum {
-        PROPERTY_SHOWGRAPH="property_showGraph",
+        PROPERTY_CHARTCOLORPARTITION="property_chartColorPartition",
         PROPERTY_SHOWREARINDEX="property_showRearIndex",
         PROPERTY_MINMAXSPEED="property_minMaxSpeed"
     }
@@ -34,7 +34,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         LogMonkey.Debug.logMessage("SpeedIndexView.initialize()","");
         SlavicsSimpleDataField.initialize();
         
-        Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_SHOWGRAPH)==null?true:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
+        //Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_CHARTCOLORPARTITION)==null?-1:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?showRearIndex:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?30:Properties.getValue(PROPERTY_SHOWREARINDEX) as Number);
 
@@ -81,6 +81,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     (:debug)
     function initLoad() as Void {
         LogMonkey.Debug.logMessage("DataStorageGraph","initLoad()");
+        ds.add(10,null);ds.add(10,null);ds.add(10,null);ds.add(10,null);ds.add(30,null);ds.add(30,null);ds.add(30,null);ds.add(30,null);
         ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);
         ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);ds.add(30,20);
         ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);ds.add(10,20);
@@ -88,13 +89,13 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
+        Properties.setValue(PROPERTY_CHARTCOLORPARTITION,2);
     }
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
-
-        ds.setVisible(Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
+        ds.setChartColorPartition(Properties.getValue(PROPERTY_CHARTCOLORPARTITION) as Number);
         showRearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
-        LogMonkey.Debug.logVariable("DataStorageGraph.onSettingsChanged()","showRearIndex",showRearIndex);
+        LogMonkey.Debug.logVariable("SpeedIndexView.onSettingsChanged()","showRearIndex",showRearIndex);
         //colorMode.handleSettingUpdate();
         ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
     }

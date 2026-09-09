@@ -10,13 +10,15 @@
         <!--property id="property_version" type="string">0.0.0</property>
         <property id="property_fitFileSaving" type="boolean">true</property>
         <property id="property_nightMode" type="boolean">false</property-->
-        <property id="property_showGraph" type="boolean">true</property>
+        <!--property id="property_showGraph" type="boolean">true</property-->
+        <property id="property_chartColorPartition" type="number">-1</property>
         <property id="property_minMaxSpeed" type="number">30</property>
         <property id="property_showRearIndex" type="boolean">false</property>
         <!--property id="property_graphColorMode" type="number">1</property-->
         <!--property id="property_showAdditionalValues" type="number">0</property>
         
         <property id="property_debugMode" type="boolean">true</property-->
+        
     </properties>
 
     <settings>
@@ -29,10 +31,15 @@
         <setting propertyKey="@Properties.property_nightMode" title="@Strings.property_nightMode_title">
             <settingConfig type="boolean" required="true" />
         </setting-->
-        <setting propertyKey="@Properties.property_showGraph" title="@Strings.property_showGraph_title">
-            <settingConfig type="boolean" required="true" />
+
+        <setting propertyKey="@Properties.property_chartColorPartition" title="@Strings.property_chartColorPartition">
+            <settingConfig type="list">
+                <listEntry value="-1">No show graph</listEntry>
+                <listEntry value="0">Horizontaly</listEntry>
+                <listEntry value="1">Verticaly</listEntry>
+            </settingConfig>
         </setting>
-        <setting propertyKey="@Properties.property_minMaxSpeed" title="@Strings.property_minMaxSpeed_title">
+        <setting propertyKey="@Properties.property_minMaxSpeed" title="@Strings.property_minMaxSpeed">
             <settingConfig type="list">
                 <listEntry value="0">Auto</listEntry>
                 <listEntry value="15">15 km/h</listEntry>

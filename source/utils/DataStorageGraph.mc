@@ -7,16 +7,21 @@ class DataStorageGraph {
 
     
     typedef NumArray as Array<Numeric or Null>;
+    enum {
+        CHART_PARTITION_NOSHOW=0,
+        CHART_PARTITION_HORIZONTALY=1,
+        CHART_PARTITION_VERTICALY=2
+    }
     private var data as Array<NumArray>;
     //private var data as Array<Numeric or Null>;
     //private var data2 as Array<Numeric or Null>;
     private var maxSize as Number;
     private var minMaximumGraphValue=30 as Number;
-    private var visible=true as Boolean;
-    private var colors={:lineLow=>ColorMode.COLOR_LT_BLUE,:lineHight=>ColorMode.COLOR_LT_RED,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
+    private var chartColorPartition=-1 as Number;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_BLUE,:lineHight=>ColorMode.COLOR_LT_RED,:line=>Graphics.COLOR_LT_GRAY,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
-        LogMonkey.Debug.logMessage("SpeedIndexView.DataStorage()",size.toString());
+        LogMonkey.Debug.logMessage("DataStorage.initialize()","size="+size.toString());
         self.maxSize=size;
         //points=[] as Array<NumArray>;
         data=new Array<NumArray>[size];
@@ -25,14 +30,18 @@ class DataStorageGraph {
     function setMinMaxSpeedGraph(minMaxSpeed as Numeric) as Void {
         self.minMaximumGraphValue=minMaxSpeed;
         if(self.minMaximumGraphValue<=0){
-            minMaximumGraphValue=-99999;
+            self.minMaximumGraphValue=-99999;
         }
+        LogMonkey.Debug.logVariable("DataStorage.setMinMaxSpeedGraph()","minMaximumGraphValue",minMaximumGraphValue);
     }
+
     public function setColors(colors as Dictionary<Symbol,Graphics.ColorType>){
         self.colors=colors;
     }
-    function setVisible(visible as Boolean) as Void {
-        self.visible=visible;
+
+    function setChartColorPartition(partition as Number) as Void {
+        self.chartColorPartition=partition;
+        LogMonkey.Debug.logVariable("DataStorage.setChartColorPartition()","chartColorPartition",self.chartColorPartition);
     }
 
     (:release)
@@ -49,7 +58,7 @@ class DataStorageGraph {
             data=data.slice(1,null);
         }
         if(System.getClockTime().sec==13){
-            LogMonkey.Debug.logMessage("DataStorageGraph","new Point12(null,null)");
+            LogMonkey.Debug.logMessage("DataStorageGraph","DEBUG new Point12(null,null)");
             data.add([null, null] as NumArray);
         } else {
             data.add([numeric1,numeric2] as NumArray);
@@ -85,23 +94,30 @@ class DataStorageGraph {
     function size() as Number {
         return data.size();
     }
+    (:debug)
+    function debugValue() as Void {
+        setChartColorPartition(System.getClockTime().sec/30+1);
+    }
+
+    (:release)
+    function debugValue() as Void {}
 
     (:typecheck(true))
     function draw(dc as Dc,locX as Number) as Void {
-        if(!visible){
+        if(chartColorPartition==CHART_PARTITION_NOSHOW){
             return;
         }
-
+        debugValue();
         var minMax=getMinMax(dc.getWidth());
-        LogMonkey.Debug.logVariable("DataStorage.draw()","minMax",minMax);
+        //LogMonkey.Debug.logVariable("DataStorage.draw()","minMax",minMax);
 
         if(minMax==null||(minMax[1]-minMax[0]).toFloat()<0.1){
             return;
         }
         
         var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
-        LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
-        LogMonkey.Debug.logVariable("DataStorage.draw()","data.size()",data.size());
+        //LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
+        //LogMonkey.Debug.logVariable("DataStorage.draw()","data.size()",data.size());
         //LogMonkey.Debug.logVariable("DataStorage.draw()","data",data);
 
         var drawSpeed=null as Numeric or Null;
@@ -144,22 +160,31 @@ class DataStorageGraph {
 
                     } else {
 
-                        // Line above average
-                        dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
-                        dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,drawSpeed);
-
-                        // Line under average
-                        dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                        dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,dc.getHeight());
+                        if(chartColorPartition==CHART_PARTITION_VERTICALY){
+                            // Line above average
+                            dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,drawSpeed);
+                            // Line under average
+                            dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,dc.getHeight());
+                        } else {
+                            // Line
+                            dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
+                            dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
+                        }
+                        
 
                     }
+                } else {
+                    dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
+                    dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
                 }
                 
                 // Draw Value point
                 dc.setPenWidth(2);
                 dc.setColor(colors.get(:value),Graphics.COLOR_TRANSPARENT);
 
-                if(drawAvg!=null&&prevSpeed!=null){
+                if(prevSpeed!=null){
                     dc.setColor(Graphics.COLOR_DK_RED,Graphics.COLOR_TRANSPARENT);
                     dc.drawLine(prevSpeed[0],prevSpeed[1],dc.getWidth()-i,drawSpeed);
                 }
@@ -167,8 +192,6 @@ class DataStorageGraph {
             } else {
                 prevSpeed=null;
             }
-
-            
 
             if(drawAvg!=null){
                 // AVG Point
