@@ -14,6 +14,7 @@ class ColorMode {
     }
     
     public var isNight=false as Boolean;
+    private var isLastNight=!isNight as Boolean;
 
     private const MODE_BLACKANDWHITE={:day=>{
                 :background=>Graphics.COLOR_WHITE,
@@ -30,7 +31,7 @@ class ColorMode {
                 :valueChange=>Graphics.COLOR_LT_GRAY,
                 :error=>Graphics.COLOR_RED,
             }
-        } as Dictionary<Dictionary<Symbol,Graphics.ColorValue>>;
+        } as Dictionary<Symbol,Dictionary<Symbol,Graphics.ColorValue>>;
     private const MODE_BLUE={:day=>{
                 :background=>Graphics.COLOR_DK_BLUE,
                 :label=>Graphics.COLOR_WHITE,
@@ -73,12 +74,15 @@ class ColorMode {
             }
         } as Dictionary<Dictionary<Symbol,Graphics.ColorValue>>;
     private var colors=MODE_BLACKANDWHITE as Dictionary<Symbol,Graphics.ColorValue>;
-    function initialize() {
-        System.println("ColorMode.initialize()");
+    function initialize(colors as Dictionary<Symbol,Dictionary<Symbol,Graphics.ColorValue>>) {
+        self.colors=colors;
+        if(!self.colors.hasKey(:night)){
+            self.colors.put(:night,self.colors.get(:day));
+        }
     }
     
     public function handleSettingUpdate() as Void {
-        System.println("ColorMode.onSettingsChanged()="+Properties.getValue("property_colorMode").toString());
+        LogMonkey.Debug.logMessage("ColorMode",".onSettingsChanged()="+Properties.getValue("property_colorMode").toString());
         switch (Properties.getValue("property_colorMode") as Number) {
             case 0:
                 colors=MODE_BLACKANDWHITE as Dictionary<Symbol,Graphics.ColorValue>;
@@ -101,10 +105,17 @@ class ColorMode {
         }
     }
     public function compute() as Void {
+        if(isNight!=isLastNight){
+            isLastNight=isNight;
+        }
         isNight=System.getDeviceSettings().isNightModeEnabled;
     }
     public function getFieldColor(field as Symbol) as Graphics.ColorValue {
-        return colors.get(isNight?:night::day).get(field) as Graphics.ColorValue;
+        if(isNight && colors.get(:night).get(field)!=null){
+            return colors.get(:night).get(field) as Graphics.ColorValue;
+        } else {
+            return colors.get(:day).get(field) as Graphics.ColorValue;
+        }
     }
     public function getNightFieldColor(field as Symbol) as Graphics.ColorValue {
         return colors.get(:night).get(field) as Graphics.ColorValue;
@@ -112,5 +123,7 @@ class ColorMode {
     public function getColors() as Dictionary<Symbol,Graphics.ColorValue> {
         return colors.get(isNight?:night::day) as Dictionary<Symbol,Graphics.ColorValue>;
     }
-
+    public function isChangeNight() as Boolean {
+        return isNight!=isLastNight;
+    }
 }

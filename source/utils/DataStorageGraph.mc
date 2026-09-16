@@ -15,18 +15,24 @@ class DataStorageGraph {
     private var data as Array<NumArray>;
     //private var data as Array<Numeric or Null>;
     //private var data2 as Array<Numeric or Null>;
-    private var maxSize as Number;
+    private var locX=0 as Number;
+    private var locY=0 as Number;
+    private var width=0 as Number;
+    private var height=0 as Number;
     private var minMaximumGraphValue=30 as Number;
     private var chartColorPartition=-1 as Number;
-    private var colors={:lineLow=>ColorMode.COLOR_LT_BLUE,:lineHight=>ColorMode.COLOR_LT_RED,:line=>Graphics.COLOR_LT_GRAY,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
+    private var colors={:lineLow=>ColorMode.COLOR_LT_BLUE,:lineHight=>ColorMode.COLOR_LT_RED,:line=>ColorMode.COLOR_LT_RED,:value=>Graphics.COLOR_RED,:avg=>Graphics.COLOR_DK_BLUE,:max=>Graphics.COLOR_DK_RED} as Dictionary<Symbol,Graphics.ColorType>;
 
     function initialize(size as Number) {
-        LogMonkey.Debug.logMessage("DataStorage.initialize()","size="+size.toString());
-        self.maxSize=size;
-        //points=[] as Array<NumArray>;
         data=new Array<NumArray>[size];
     }
     
+    function setBox(x as Number,y as Number,w as Number,h as Number) as Void {
+        self.locX=x;
+        self.locY=y;
+        self.width=width;
+        self.height=height;
+    }
     function setMinMaxSpeedGraph(minMaxSpeed as Numeric) as Void {
         self.minMaximumGraphValue=minMaxSpeed;
         if(self.minMaximumGraphValue<=0){
@@ -54,7 +60,7 @@ class DataStorageGraph {
 
     (:debug)
     function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
-        if(data.size()>=maxSize){
+        if(data.size()>=self.width){
             data=data.slice(1,null);
         }
         if(System.getClockTime().sec==13){
@@ -106,7 +112,7 @@ class DataStorageGraph {
     function debugValue() as Void {}
 
     (:typecheck(true))
-    function draw(dc as Dc,locX as Number) as Void {
+    function draw(dc as Dc) as Void {
         if(chartColorPartition==CHART_PARTITION_NOSHOW){
             return;
         }
@@ -214,7 +220,7 @@ class DataStorageGraph {
     }
 
     function toString() as String{
-        return "DataStorage["+maxSize+"/"+data.size()+"]: "+data.toString();
+        return "DataStorage["+self.width+"/"+data.size()+"]: "+data.toString();
     }
 
 }

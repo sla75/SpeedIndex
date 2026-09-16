@@ -23,7 +23,6 @@ class SpeedIndexApp extends Application.AppBase {
     }
 
     function onSettingsChanged() { // triggered by settings change in GCM
-        System.println("SpeedIndexApp.onSettingsChanged()");
         view.onSettingsChanged();
         WatchUi.requestUpdate();   // update the view to reflect changes
     }

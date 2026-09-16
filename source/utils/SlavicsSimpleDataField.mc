@@ -130,6 +130,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         labels.get(:bottomRight).locY=dc.getHeight()-self.rim-labels.get(:bottomRight).getFontAscent();
 
     }
+
     public function setTimer(duration as Number or Null) as Void {
         LogMonkey.Debug.logVariable("SlavicsSimpleDataField.setTimer()","duration",duration);
         if(duration==null||duration==0){
@@ -179,6 +180,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     
     public function onUpdate(dc as Dc) as Void {
         LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onUpdate()",timer);
+        dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
+        dc.clear();
         valueArea.setText(value);
 
         for( var i = 0; i < drawables.size(); i++ ) {
@@ -237,8 +240,8 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         //dc.drawLine(valueArea.locX,valueArea.locY+valueArea.height/2,valueArea.locX+valueArea.width,valueArea.locY+valueArea.height/2);
         var valueDim=dc.getTextDimensions(value,Graphics.FONT_NUMBER_THAI_HOT);
         dc.drawRectangle(valueArea.locX-valueDim[0]/2,valueArea.locY-valueDim[1]/2,valueDim[0],valueDim[1]);
-        dc.drawLine(valueArea.locX,valueArea.locY-valueDim[1]/2+5,valueArea.locX,valueArea.locY+valueDim[1]/2-5);
-        dc.drawLine(valueArea.locX-valueDim[0]/2-15,valueArea.locY,valueArea.locX+valueDim[0]/2+15,valueArea.locY);
+        dc.drawLine(valueArea.locX,valueArea.locY-valueDim[1]/2+10,valueArea.locX,valueArea.locY+valueDim[1]/2-10);
+        dc.drawLine(valueArea.locX-valueDim[0]/2-50,valueArea.locY,valueArea.locX+valueDim[0]/2+25,valueArea.locY);
         LogMonkey.Debug.logVariable("SlavicsSimpleDataField.onUpdateAfter()","font Dim height",valueDim[1]);
         LogMonkey.Debug.logVariable("SlavicsSimpleDataField.onUpdateAfter()","font height",Graphics.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT));
         dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);

@@ -11,19 +11,40 @@ import LogMonkey;
 
 class SpeedIndexView extends SlavicsSimpleDataField {
 
-    private var colorMode=new ColorMode() as ColorMode;
+    private var colorMode=new ColorMode({
+        :day=>{
+                :background=>Graphics.COLOR_WHITE,
+                :label=>ColorMode.COLOR_VD_BLUE,
+                :value=>ColorMode.COLOR_VD_BLUE,
+                :valueInActive=>Graphics.COLOR_LT_GRAY,
+                :valuePaused=>Graphics.COLOR_ORANGE,
+                :valueEdge=>Graphics.COLOR_DK_RED,
+                :topLeft=>Graphics.COLOR_DK_RED,
+                :bottomLeft=>Graphics.COLOR_DK_BLUE,
+                :shadowUp=>Graphics.COLOR_LT_GRAY,
+                :shadowDown=>Graphics.COLOR_DK_GRAY,
+                :rearEdge=>Graphics.COLOR_RED,
+            },
+        :night=>{
+                :background=>Graphics.COLOR_BLACK,
+                :label=>Graphics.COLOR_LT_GRAY,
+                :value=>Graphics.COLOR_WHITE,
+                :valueInActive=>Graphics.COLOR_DK_GRAY,
+                :topLeft=>Graphics.COLOR_RED,
+                :bottomLeft=>Graphics.COLOR_BLUE,
+                :shadowUp=>Graphics.COLOR_DK_GRAY,
+                :shadowDown=>Graphics.COLOR_LT_GRAY,
+            }
+        } as Dictionary<Symbol,Dictionary<Symbol,Graphics.ColorValue>>
+    ) as ColorMode;
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
     private var avgTriangle=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
-    private var gearNum=new MyText({:font=>Graphics.FONT_TINY,:justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
+    private var gearNum=new Gear({:font=>Graphics.FONT_TINY});
     private const COLORS_DEVICE_STATE=[Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_RED] as Array<Graphics.ColorValue>;
     private const COLORS_POS_QUALITY=[Graphics.COLOR_RED,Graphics.COLOR_DK_RED,Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_GREEN] as Array<Graphics.ColorValue>;
     //private const PIRAD=Math.PI/180f;
-    private var fps=[] as Array<Array<Graphics.Point2D>>;
-    private const SIN60=0.866f;
-    private var currentGear=null as Number or Null;
-    private var showRearIndex=true as Boolean;
-    private var edgeRearIndex=false as Boolean;
+    
     private enum {
         PROPERTY_CHARTCOLORPARTITION="property_chartColorPartition",
         PROPERTY_SHOWREARINDEX="property_showRearIndex",
@@ -39,7 +60,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.initialize();
         
         //Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_CHARTCOLORPARTITION)==null?-1:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
-        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?showRearIndex:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
+        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?false:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?30:Properties.getValue(PROPERTY_SHOWREARINDEX) as Number);
 
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
@@ -47,34 +68,34 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
         avgTriangle.setFont(WatchUi.loadResource(Rez.Fonts.Icons));
         avgTriangle.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        avgTriangle.setJustification(Graphics.TEXT_JUSTIFY_CENTER|isHdDisplay?0:Graphics.TEXT_JUSTIFY_VCENTER);
+        avgTriangle.setShiftShadow(isHdDisplay?2:1);
+        LogMonkey.Debug.logVariable("SpeedIndexView.initialize()","isHdDisplay",isHdDisplay);
+        avgTriangle.setJustification(isHdDisplay?Graphics.TEXT_JUSTIFY_CENTER:Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER);
         //labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
 
         labels.get(:topLeft).setVisible(true);
         labels.get(:topRight).setVisible(true);
         labels.get(:bottomLeft).setVisible(true);
         //labels.get(:bottomRight).setVisible(true);
-
-        labels.get(:topLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        labels.get(:bottomLeft).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        labels.get(:topRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        //labels.get(:bottomRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-
         bottomLabel.setText("km/h");
         bottomLabel.setVisible(true);
-        bottomLabel.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        valueArea.setShiftShadow(isHdDisplay?3:2);
+        valueIndex.setShiftShadow(isHdDisplay?2:1);
 
-        valueArea.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        valueArea.setShiftShadow(3);
+        labels.get(:topLeft).setShiftShadow(1);
+        labels.get(:bottomLeft).setShiftShadow(1);
+        //labels.get(:bottomRight).setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
 
+        
         valueIndex.setVisible(true);
-        valueIndex.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
-        valueIndex.setShiftShadow(2);
-
+        
+        
+        ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenWidth-labelLine);
         onSettingsChanged();
         
         //addDrawable(valueMax);
         //addDrawable(valueAvg);
+        addDrawable(ds);
         addDrawable(avgTriangle);
         addDrawable(gearNum);
         initLoad();
@@ -95,14 +116,15 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         Properties.setValue(PROPERTY_CHARTCOLORPARTITION,2);
+        Properties.setValue(PROPERTY_SHOWREARINDEX,true);
     }
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
         ds.setChartColorPartition(Properties.getValue(PROPERTY_CHARTCOLORPARTITION) as Number);
-        showRearIndex=Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean;
-        LogMonkey.Debug.logVariable("SpeedIndexView.onSettingsChanged()","showRearIndex",showRearIndex);
+        gearNum.setVisible(Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
         //colorMode.handleSettingUpdate();
         ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
+        setColors();
     }
     
     function onLayout(dc as Dc) as Void {
@@ -131,61 +153,27 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             valueIndex.setFont(Graphics.FONT_SMALL);
 
         }
-
+        
         SlavicsSimpleDataField.onLayout(dc);        
 
-        bottomLabel.setColor(Graphics.COLOR_DK_GRAY);
-        bottomLabel.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        
 
-        gearNum.setColor(Graphics.COLOR_WHITE);
-        labels.get(:topLeft).setShiftShadow(2);
-        //labels.get(:bottomLeft).setShiftShadow(2);
+        
+        
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
         labels.get(:topRight).locY=2;
-        //valueArea.setColor(Graphics.COLOR_BLACK);
 
         avgTriangle.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         avgTriangle.locY=valueArea.locY;
-        gearNum.locX=dc.getWidth()-avgTriangle.locX;
-        gearNum.locY=valueArea.locY+gearNum.getFontHeight();
 
-        var l=dc.getTextWidthInPixels("12",gearNum.getFont());
-        dc.setPenWidth(1);
-        //dim[1]=gearNum.getFontAscent();
-        var y=gearNum.locY-gearNum.getFontDescent()/2;
-        dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
-        
-        fps=[];
-        var lSIN60=l*SIN60;
-        var fp=[] as Array<Graphics.Point2D>;
-        fp.add([gearNum.locX+l,y]);
-        fp.add([gearNum.locX-l/2,y+lSIN60]);
-        fp.add([gearNum.locX-l/2,y-lSIN60]);
-        fp.add(fp[0]);
-        fps.add(fp);
+        gearNum.setLocX(dc.getWidth()-avgTriangle.locX);
+        gearNum.setLocY(valueArea.locY+valueIndex.getFontHeight());
+        gearNum.onLayout(dc);
 
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([gearNum.locX+lSIN60,y+l/2]);
-        fp.add([gearNum.locX-lSIN60,y+l/2]);
-        fp.add([gearNum.locX,y-l]);
-        fp.add(fp[0]);
-        fps.add(fp);
+        ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenHeight-labelLine);
 
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([gearNum.locX+l/2,y+lSIN60]);
-        fp.add([gearNum.locX-l,y]);
-        fp.add([gearNum.locX+l/2,y-lSIN60]);
-        fp.add(fp[0]);
-        fps.add(fp);
-
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([gearNum.locX,y+l]);
-        fp.add([gearNum.locX-lSIN60,y-l/2]);
-        fp.add([gearNum.locX+lSIN60,y-l/2]);
-        fp.add(fp[0]);
-        fps.add(fp);
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
         System.println("Screen: "+dc.getWidth()+"x"+dc.getHeight());
@@ -197,6 +185,28 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         System.println("|FONT_MEDIUM|"+Graphics.getFontHeight(Graphics.FONT_MEDIUM)+"|"+Graphics.getFontAscent(Graphics.FONT_MEDIUM)+"|"+Graphics.getFontDescent(Graphics.FONT_MEDIUM)+"|");
         System.println("|FONT_LARGE|"+Graphics.getFontHeight(Graphics.FONT_LARGE)+"|"+Graphics.getFontAscent(Graphics.FONT_LARGE)+"|"+Graphics.getFontDescent(Graphics.FONT_LARGE)+"|");
         /***/
+    }
+    private function setColors() as Void{
+        LogMonkey.Debug.logMessage("SpeedIndexView","setColors() isNight="+colorMode.isNight);
+        var shUp=colorMode.getFieldColor(:shadowUp);
+        var shDown=colorMode.getFieldColor(:shadowDown);
+        labels.get(:topLeft).setShadowColor(shUp,shDown);
+        labels.get(:bottomLeft).setShadowColor(shUp,shDown);
+        labels.get(:topRight).setShadowColor(shUp,shDown);
+        bottomLabel.setShadowColor(shUp,shDown);
+        valueArea.setShadowColor(shUp,shDown);
+        valueIndex.setShadowColor(shUp,shDown);
+        avgTriangle.setShadowColor(shUp,shDown);
+        gearNum.setColor(colorMode.getFieldColor(:value));
+
+        labelArea.setColor(colorMode.getFieldColor(:label));
+        valueIndex.setColor(colorMode.getFieldColor(:value));
+        bottomLabel.setColor(colorMode.getFieldColor(:label));
+        bottomLabel.setShadowColor(shUp,shDown);
+
+        labels.get(:topLeft).setColor(colorMode.getFieldColor(:topLeft));
+        labels.get(:bottomLeft).setColor(colorMode.getFieldColor(:bottomLeft));
+        gearNum.setTextColor(colorMode.getFieldColor(:background));
     }
     /***
     function onShow() {
@@ -213,9 +223,12 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         //LogMonkey.Debug.logMessage("SpeedIndexView","compute(speed="+info.currentSpeed+")");
         SlavicsSimpleDataField.compute(info);
         colorMode.compute();
-        SlavicsSimpleDataField.setColors(colorMode.getColors());
-        labels.get(:topLeft).setColor(Graphics.COLOR_DK_RED);
-        labels.get(:bottomLeft).setColor(Graphics.COLOR_DK_BLUE);
+        if(colorMode.isChangeNight()){
+            SlavicsSimpleDataField.setColors(colorMode.getColors());
+            setColors();
+        }
+        
+        
         labels.get(:topLeft).setText(info.maxSpeed==null?"--":(info.maxSpeed*3.6).format("%.1f"));
         LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.averageSpeed",info.averageSpeed);
         labels.get(:bottomLeft).setText(info.averageSpeed==null?"--":(info.averageSpeed*3.6).format("%.1f"));
@@ -233,7 +246,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
                     setTextColor(:topRight,COLORS_DEVICE_STATE[speedSensor.getDeviceState().state]);
                 }
             } else {
-                setTextColor(:topRight,ColorMode.COLOR_VD_BLUE);
+                setTextColor(:topRight,colorMode.getFieldColor(:label));
             }
             setTextInfo(:topRight,CHAR_SENSOR);
         } else {
@@ -245,6 +258,24 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
 
         //speed=Math.rand()%200/10;
+        /*** DEBUG ***/
+        //isHdDisplay?0:
+        speed=20+Math.rand()%5;
+        var averageSpeed=(System.getClockTime().sec/30+1)*15;
+        if(speed-averageSpeed>0.28f){
+                    // Speed over average
+                    avgTriangle.setVisible(true);
+                    avgTriangle.setColor(Graphics.COLOR_DK_RED);
+                    avgTriangle.setText(SPEED_OVER_AVG);
+                } else if(averageSpeed-speed>0.28f){
+                    // Speed under average
+                    avgTriangle.setVisible(true);
+                    avgTriangle.setColor(Graphics.COLOR_DK_BLUE);
+                    avgTriangle.setText(SPEED_UNDER_AVG);
+                } else {
+                    avgTriangle.setVisible(false);    
+                }
+        /***
         if(speed!=null){
             if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
@@ -268,15 +299,16 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             speed=-1;
             avgTriangle.setVisible(false);
         }
-        
+        /***/
         // Add values to Graph
         ds.add(speed<0?null:speed,info.averageSpeed!=null?info.averageSpeed*3.6:null);
-
+        
         if(info.timerState==Activity.TIMER_STATE_ON){
+            valueArea.setColor(colorMode.getFieldColor(:value));
         } else if(info.timerState==Activity.TIMER_STATE_OFF||info.timerState==Activity.TIMER_STATE_STOPPED){
-            valueArea.setColor(Graphics.COLOR_DK_GRAY);
+            valueArea.setColor(colorMode.getFieldColor(:valueInActive));
         } else if(info.timerState==Activity.TIMER_STATE_PAUSED){
-            valueArea.setColor(Graphics.COLOR_ORANGE);
+            valueArea.setColor(colorMode.getFieldColor(:valuePaused));
         }
         valueArea.setVisible(true);
         if(speed>5f&&info.timerState!=Activity.TIMER_STATE_ON&&System.getClockTime().sec%2==1){
@@ -296,39 +328,42 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
         //showRearIndex=true;
-        if(showRearIndex){
-            /*** DEBUG ***
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","showRearIndex",showRearIndex);
+        if(gearNum.isVisible()){
+            gearNum.setText(info.rearDerailleurIndex==null?"--":info.rearDerailleurIndex.toString());
+            if(info.rearDerailleurMax!=null&&(info.rearDerailleurIndex==1||info.rearDerailleurIndex==info.rearDerailleurMax)){
+                gearNum.setColor(colorMode.getFieldColor(:rearEdge));
+            } else {
+                gearNum.setColor(colorMode.getFieldColor(:value));
+            }
+            /*** DEBUG ***/
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
-            currentGear=Math.rand()%12+1;
-            info.rearDerailleurMax=12;
+            var currentGear=Math.rand()%12+1;
             currentGear=System.getClockTime().sec==17?null:currentGear;
-            /***/
-            currentGear=info.rearDerailleurIndex;
+            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","currentGear",currentGear);
             gearNum.setText(currentGear==null?"--":currentGear.toString());
-            if(info.rearDerailleurMax!=null&&(currentGear==1||currentGear==info.rearDerailleurMax)){
-                edgeRearIndex=true;
+            if(currentGear==1||currentGear==12){
+                gearNum.setColor(colorMode.getFieldColor(:rearEdge));
             } else {
-                edgeRearIndex=false;
+                gearNum.setColor(colorMode.getFieldColor(:value));
             }
+            /***/
         }
     }
 
-    (:typecheck(false))
     public function onUpdate(dc as Dc) as Void {
-        dc.setColor(Graphics.COLOR_TRANSPARENT,colors.get(:background));
-        dc.clear();
-        ds.draw(dc,labelLine);
-        //if(show_RearIndex&&currentGear!=null){
-        if(showRearIndex){
-            dc.setColor(edgeRearIndex?Graphics.COLOR_DK_RED:ColorMode.COLOR_VD_BLUE,Graphics.COLOR_TRANSPARENT);    
-            for(var i=0;i<fps.size();i++){
-                dc.fillPolygon(fps[i]);
-            }
-        }
-        
         SlavicsSimpleDataField.onUpdate(dc);
+        onUpdateAfter(dc);
+        
+    }
+    (:release)
+    private function onUpdateAfter(dc as Dc) as Void {
+    }
+    (:debug)
+    private function onUpdateAfter(dc as Dc) as Void {
+        dc.setPenWidth(1);
+        dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(avgTriangle.locX,avgTriangle.locY-25,avgTriangle.locX,avgTriangle.locY+25);
     }
 
 }
