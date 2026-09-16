@@ -27,7 +27,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private enum {
         PROPERTY_CHARTCOLORPARTITION="property_chartColorPartition",
         PROPERTY_SHOWREARINDEX="property_showRearIndex",
-        PROPERTY_MINMAXSPEED="property_minMaxSpeed"
+        PROPERTY_MINMAXSPEED="property_minMaxSpeed",
+        SPEED_OVER_AVG="}",
+        SPEED_UNDER_AVG="{",
+        CHAR_SATELLITE="G",
+        CHAR_SENSOR="B"
     }
 
     function initialize() {
@@ -231,26 +235,28 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             } else {
                 setTextColor(:topRight,ColorMode.COLOR_VD_BLUE);
             }
-            setTextInfo(:topRight,"B");
+            setTextInfo(:topRight,CHAR_SENSOR);
         } else {
             LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.currentSpeed",info.currentSpeed);
             speed=info.currentSpeed==null?-1:info.currentSpeed;
             // Satellite
             setTextColor(:topRight,COLORS_POS_QUALITY[info.currentLocationAccuracy==null?0:info.currentLocationAccuracy]);
-            setTextInfo(:topRight,"G");
+            setTextInfo(:topRight,CHAR_SATELLITE);
         }
 
         //speed=Math.rand()%200/10;
         if(speed!=null){
             if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
+                    // Speed over average
                     avgTriangle.setVisible(true);
                     avgTriangle.setColor(Graphics.COLOR_DK_RED);
-                    avgTriangle.setText("}");
+                    avgTriangle.setText(SPEED_OVER_AVG);
                 } else if(info.averageSpeed-speed>0.28f){
+                    // Speed under average
                     avgTriangle.setVisible(true);
                     avgTriangle.setColor(Graphics.COLOR_DK_BLUE);
-                    avgTriangle.setText("{");
+                    avgTriangle.setText(SPEED_UNDER_AVG);
                 } else {
                     avgTriangle.setVisible(false);    
                 }
