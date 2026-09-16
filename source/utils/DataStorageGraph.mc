@@ -94,9 +94,12 @@ class DataStorageGraph {
     function size() as Number {
         return data.size();
     }
+    
     (:debug)
     function debugValue() as Void {
-        setChartColorPartition(System.getClockTime().sec/30+1);
+        if(self.chartColorPartition!=System.getClockTime().sec/30+1){
+            setChartColorPartition(System.getClockTime().sec/30+1);
+        }
     }
 
     (:release)

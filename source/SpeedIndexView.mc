@@ -102,7 +102,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     
     function onLayout(dc as Dc) as Void {
 
-        if(dc.getWidth()==System.getDeviceSettings().screenWidth){
+        if(dc.getWidth()==System.getDeviceSettings().screenWidth&&dc.getHeight()>System.getDeviceSettings().screenHeight/4){
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" SMALL");
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
             labels.get(:bottomLeft).setFont(Graphics.FONT_MEDIUM);
@@ -112,7 +112,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             bottomLabel.setFont(Graphics.FONT_SMALL);
             gearNum.setFont(Graphics.FONT_MEDIUM);
 
-            valueIndex.setFont(Graphics.FONT_LARGE);
+            valueIndex.setFont(Graphics.FONT_MEDIUM);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
@@ -123,7 +123,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             valueArea.setFont(Graphics.FONT_NUMBER_HOT);
             bottomLabel.setFont(Graphics.FONT_TINY);
 
-            valueIndex.setFont(Graphics.FONT_MEDIUM);
+            valueIndex.setFont(Graphics.FONT_SMALL);
 
         }
 
