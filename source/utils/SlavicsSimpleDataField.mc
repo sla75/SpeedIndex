@@ -84,6 +84,7 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     private var timer=null as SlavicsSimpleDataField.Timer;
     var value="" as String;
 
+    public var isHdDisplay=false as Boolean;
     public var rim=0 as Number;
     public var labelLine=0 as Number;
     public var colors={:background=>Graphics.COLOR_WHITE,:label=>Graphics.COLOR_DK_GRAY,:value=>Graphics.COLOR_BLACK,:valueshadow=>Graphics.COLOR_LT_GRAY} as Dictionary<Symbol,Graphics.ColorValue>;
@@ -93,11 +94,16 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
     function initialize() {
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.initialize()","");
         DataField.initialize();
+        // Příklad podmínky pro HD / high-res zařízení
+        if (System.getDeviceSettings().screenWidth >= 416 && System.getDeviceSettings().screenHeight >= 416) {
+            isHdDisplay=true;
+        }
     }
     function addDrawable(draw as Drawable) as Void{
         self.drawables.add(draw);
     }
     function onLayout(dc as Dc) as Void {
+        
         //LogMonkey.Debug.logMessage("SlavicsSimpleDataField.onLayout()",dc.getWidth()+"x"+dc.getHeight());
         rim=dc.getHeight()*0.02f;
         labelLine=labelArea.getFontHeight()*1.1;
@@ -111,10 +117,11 @@ class SlavicsSimpleDataField extends WatchUi.DataField {
         valueIndex.locY=valueArea.locY-Graphics.getFontAscent(valueIndex.getFont());
 
         labels.get(:topLeft).locX=self.rim;
-        labels.get(:topLeft).locY=self.labelLine;
+        labels.get(:topLeft).locY=isHdDisplay?self.labelLine:self.rim;
 
         labels.get(:topRight).locX=dc.getWidth()-self.rim;
-        labels.get(:topRight).locY=self.labelLine;
+        labels.get(:topRight).locY=isHdDisplay?self.labelLine:self.rim;
+
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();

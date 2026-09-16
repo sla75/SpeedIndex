@@ -14,7 +14,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var colorMode=new ColorMode() as ColorMode;
     private var speedSensor=new AntPlus.BikeSpeed(new AntPlus.BikeSpeedListener()) as AntPlus.BikeSpeed;
     private var ds=new DataStorageGraph(System.getDeviceSettings().screenWidth) as DataStorageGraph;
-    private var speedChar=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
+    private var avgTriangle=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
     private var gearNum=new MyText({:font=>Graphics.FONT_TINY,:justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
     private const COLORS_DEVICE_STATE=[Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_RED] as Array<Graphics.ColorValue>;
     private const COLORS_POS_QUALITY=[Graphics.COLOR_RED,Graphics.COLOR_DK_RED,Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_GREEN] as Array<Graphics.ColorValue>;
@@ -41,8 +41,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
         labels.get(:topRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
-        speedChar.setFont(WatchUi.loadResource(Rez.Fonts.Icons));
-        speedChar.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        avgTriangle.setFont(WatchUi.loadResource(Rez.Fonts.Icons));
+        avgTriangle.setShadowColor(Graphics.COLOR_WHITE,Graphics.COLOR_LT_GRAY);
+        avgTriangle.setJustification(Graphics.TEXT_JUSTIFY_CENTER|isHdDisplay?0:Graphics.TEXT_JUSTIFY_VCENTER);
         //labels.get(:bottomRight).setFont(WatchUi.loadResource(Rez.Fonts.Icons));
 
         labels.get(:topLeft).setVisible(true);
@@ -70,7 +71,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         
         //addDrawable(valueMax);
         //addDrawable(valueAvg);
-        addDrawable(speedChar);
+        addDrawable(avgTriangle);
         addDrawable(gearNum);
         initLoad();
     }
@@ -134,15 +135,16 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
         gearNum.setColor(Graphics.COLOR_WHITE);
         labels.get(:topLeft).setShiftShadow(2);
+        //labels.get(:bottomLeft).setShiftShadow(2);
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
         labels.get(:topRight).locY=2;
         //valueArea.setColor(Graphics.COLOR_BLACK);
 
-        speedChar.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
-        speedChar.locY=valueArea.locY;
-        gearNum.locX=dc.getWidth()-speedChar.locX;
+        avgTriangle.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
+        avgTriangle.locY=valueArea.locY;
+        gearNum.locX=dc.getWidth()-avgTriangle.locX;
         gearNum.locY=valueArea.locY+gearNum.getFontHeight();
 
         var l=dc.getTextWidthInPixels("12",gearNum.getFont());
@@ -242,23 +244,23 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         if(speed!=null){
             if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
-                    speedChar.setVisible(true);
-                    speedChar.setColor(Graphics.COLOR_DK_RED);
-                    speedChar.setText("}");
+                    avgTriangle.setVisible(true);
+                    avgTriangle.setColor(Graphics.COLOR_DK_RED);
+                    avgTriangle.setText("}");
                 } else if(info.averageSpeed-speed>0.28f){
-                    speedChar.setVisible(true);
-                    speedChar.setColor(Graphics.COLOR_DK_BLUE);
-                    speedChar.setText("{");
+                    avgTriangle.setVisible(true);
+                    avgTriangle.setColor(Graphics.COLOR_DK_BLUE);
+                    avgTriangle.setText("{");
                 } else {
-                    speedChar.setVisible(false);    
+                    avgTriangle.setVisible(false);    
                 }
             } else {
-                speedChar.setVisible(false);
+                avgTriangle.setVisible(false);
             }
             speed*=3.6f;
         } else {
             speed=-1;
-            speedChar.setVisible(false);
+            avgTriangle.setVisible(false);
         }
         
         // Add values to Graph
