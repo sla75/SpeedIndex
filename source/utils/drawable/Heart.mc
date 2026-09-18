@@ -1,17 +1,20 @@
 import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.UserProfile;
 import Toybox.WatchUi;
+
 import LogMonkey;
 
-class Gear extends Drawable {
+class Heart extends Drawable {
 
     private var fps=[] as Array<Array<Graphics.Point2D>>;
-    private const SIN60=0.866f;
+    private const SIN45=0.70710678118;
     
     private var options as Dictionary;
     private var visible=true as Boolean;
     private var mainText=new MyText({:font=>Graphics.FONT_TINY,:justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
+    private const ZONE_INFO = UserProfile.getHeartRateZones2(Activity.SPORT_CYCLING);
 
     public function initialize(params as Dictionary){
         options=params;
@@ -42,11 +45,11 @@ class Gear extends Drawable {
     public function onLayout(dc as Dc) as Void {
         mainText.locX=self.locX;
         mainText.locY=self.locY;
-        var l=dc.getTextWidthInPixels("12",mainText.getFont());
+        var l=dc.getTextWidthInPixels("1",mainText.getFont());
         var y=mainText.locY-mainText.getFontDescent()/2;
         
         fps=[];
-        var lSIN60=l*SIN60;
+        var lSIN60=0;
         var fp=[] as Array<Graphics.Point2D>;
         fp.add([self.locX+l,y]);
         fp.add([self.locX-l/2,y+lSIN60]);

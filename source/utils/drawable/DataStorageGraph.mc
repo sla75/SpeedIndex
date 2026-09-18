@@ -32,6 +32,7 @@ class DataStorageGraph {
         self.locY=y.toNumber();
         self.width=w.toNumber();
         self.height=h.toNumber();
+        LogMonkey.Debug.logMessage("DataStorage.setBox(",locX+","+locY+","+width+","+height+")");
     }
     function setMinMaxSpeedGraph(minMaxSpeed as Numeric) as Void {
         self.minMaximumGraphValue=minMaxSpeed;
@@ -130,7 +131,6 @@ class DataStorageGraph {
         //LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
         //LogMonkey.Debug.logVariable("DataStorage.draw()","data.size()",data.size());
         //LogMonkey.Debug.logVariable("DataStorage.draw()","data",data);
-        LogMonkey.Debug.logVariable("DataStorage.draw()","box",locX+","+locY+"["+width+","+height+"]");
         var drawSpeed=null as Numeric or Null;
         var drawAvg=null as Numeric or Null;
         var prevSpeed=null as NumArray;
