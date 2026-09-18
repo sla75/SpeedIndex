@@ -122,7 +122,6 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
         ds.setChartColorPartition(Properties.getValue(PROPERTY_CHARTCOLORPARTITION) as Number);
         gearNum.setVisible(Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
-        //colorMode.handleSettingUpdate();
         ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
         setColors();
     }
@@ -168,11 +167,12 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         avgTriangle.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         avgTriangle.locY=valueArea.locY;
 
-        gearNum.setLocX(dc.getWidth()-avgTriangle.locX);
-        gearNum.setLocY(valueArea.locY+valueIndex.getFontHeight());
+        gearNum.locX=dc.getWidth()-avgTriangle.locX;
+        gearNum.locY=valueArea.locY+valueIndex.getFontHeight();
         gearNum.onLayout(dc);
 
         ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenHeight-labelLine);
+        //ds.setBox(labelLine,labelLine,System.getDeviceSettings().screenWidth-2*labelLine,System.getDeviceSettings().screenHeight-2*labelLine);
 
         /***
         System.println("PartNumber: "+System.getDeviceSettings().partNumber);
@@ -257,12 +257,12 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             setTextInfo(:topRight,CHAR_SATELLITE);
         }
 
-        //speed=Math.rand()%200/10;
-        /*** DEBUG ***/
-        //isHdDisplay?0:
-        speed=20+Math.rand()%5;
-        var averageSpeed=(System.getClockTime().sec/30+1)*15;
-        if(speed-averageSpeed>0.28f){
+        speed=getDebugSpeed(speed);
+        
+        if(speed!=null){
+            if(speed<0){
+                var averageSpeed=(System.getClockTime().sec/30+1)*15;
+                if(speed-averageSpeed>0.28f){
                     // Speed over average
                     avgTriangle.setVisible(true);
                     avgTriangle.setColor(Graphics.COLOR_DK_RED);
@@ -275,9 +275,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
                 } else {
                     avgTriangle.setVisible(false);    
                 }
-        /***
-        if(speed!=null){
-            if(info.averageSpeed!=null){
+                speed=-speed;
+            } else if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
                     // Speed over average
                     avgTriangle.setVisible(true);
@@ -335,19 +334,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             } else {
                 gearNum.setColor(colorMode.getFieldColor(:value));
             }
-            /*** DEBUG ***/
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
-            var currentGear=Math.rand()%12+1;
-            currentGear=System.getClockTime().sec==17?null:currentGear;
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","currentGear",currentGear);
-            gearNum.setText(currentGear==null?"--":currentGear.toString());
-            if(currentGear==1||currentGear==12){
-                gearNum.setColor(colorMode.getFieldColor(:rearEdge));
-            } else {
-                gearNum.setColor(colorMode.getFieldColor(:value));
-            }
-            /***/
+            gearNum.checkDebug(colorMode);
         }
     }
 
@@ -355,6 +342,18 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         SlavicsSimpleDataField.onUpdate(dc);
         onUpdateAfter(dc);
         
+    }
+    (:release)
+    private function getDebugSpeed(speed as Numeric or Null) as Numeric or Null {
+        return speed;
+    }
+    (:debug)
+    private function getDebugSpeed(speed as Numeric or Null) as Numeric or Null {
+        if(System.getClockTime().sec<30){
+            return (-40-Math.rand()%5)/3.6f;
+        } else {
+            return (-10-Math.rand()%5)/3.6f;
+        }
     }
     (:release)
     private function onUpdateAfter(dc as Dc) as Void {

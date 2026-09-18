@@ -28,10 +28,10 @@ class DataStorageGraph {
     }
     
     function setBox(x as Number,y as Number,w as Number,h as Number) as Void {
-        self.locX=x;
-        self.locY=y;
-        self.width=width;
-        self.height=height;
+        self.locX=x.toNumber();
+        self.locY=y.toNumber();
+        self.width=w.toNumber();
+        self.height=h.toNumber();
     }
     function setMinMaxSpeedGraph(minMaxSpeed as Numeric) as Void {
         self.minMaximumGraphValue=minMaxSpeed;
@@ -102,10 +102,12 @@ class DataStorageGraph {
     }
     
     (:debug)
-    function debugValue() as Void {
+    function debugValue(dc as Dc) as Void {
         if(self.chartColorPartition!=System.getClockTime().sec/30+1){
             setChartColorPartition(System.getClockTime().sec/30+1);
         }
+        dc.setColor(Graphics.COLOR_ORANGE,Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(locX,locY,width,height);
     }
 
     (:release)
@@ -116,7 +118,7 @@ class DataStorageGraph {
         if(chartColorPartition==CHART_PARTITION_NOSHOW){
             return;
         }
-        debugValue();
+        debugValue(dc);
         var minMax=getMinMax(dc.getWidth());
         //LogMonkey.Debug.logVariable("DataStorage.draw()","minMax",minMax);
 
@@ -124,18 +126,18 @@ class DataStorageGraph {
             return;
         }
         
-        var koefY=(dc.getHeight()-locX)/(minMax[1]-minMax[0]).toFloat();
+        var koefY=self.height/(minMax[1]-minMax[0]).toFloat();
         //LogMonkey.Debug.logVariable("DataStorage.draw()","koefY",koefY);
         //LogMonkey.Debug.logVariable("DataStorage.draw()","data.size()",data.size());
         //LogMonkey.Debug.logVariable("DataStorage.draw()","data",data);
-
+        LogMonkey.Debug.logVariable("DataStorage.draw()","box",locX+","+locY+"["+width+","+height+"]");
         var drawSpeed=null as Numeric or Null;
         var drawAvg=null as Numeric or Null;
         var prevSpeed=null as NumArray;
         var prevAvg=null as NumArray;
         for(var i=0;i<data.size();i++){
 
-            if(i>dc.getWidth()||data[data.size()-1-i]==null){
+            if(i>self.width||i>dc.getWidth()||data[data.size()-1-i]==null){
                 break;
             }
             
@@ -145,48 +147,49 @@ class DataStorageGraph {
             
             //Compute 1. value
             if(data[data.size()-1-i][0]!=null){
-                drawSpeed=dc.getHeight()-(data[data.size()-1-i][0]-minMax[0])*koefY;
+                drawSpeed=self.locY+self.height-(data[data.size()-1-i][0]-minMax[0])*koefY;
             } else {
                 drawSpeed=null;
             }
 
             //Compute 2. value
             if(data[data.size()-1-i][1]!=null){
-                drawAvg=dc.getHeight()-(data[data.size()-1-i][1]-minMax[0])*koefY;
+                drawAvg=self.locY+self.height-(data[data.size()-1-i][1]-minMax[0])*koefY;
             } else {
                 drawAvg=null;
             }
-
+            var leftX=self.locX+self.width-i;
             if(drawSpeed!=null){
-
+                var downY=self.locY+self.height;
                 if(drawAvg!=null){
                     dc.setPenWidth(1);
+                    
                     if(drawAvg<drawSpeed){
 
                         // Line under average
                         dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                        dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
+                        dc.drawLine(leftX,drawSpeed,leftX,downY);
 
                     } else {
 
                         if(chartColorPartition==CHART_PARTITION_VERTICALY){
                             // Line above average
                             dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
-                            dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,drawSpeed);
+                            dc.drawLine(leftX,drawAvg,leftX,drawSpeed);
                             // Line under average
                             dc.setColor(colors.get(:lineLow),Graphics.COLOR_TRANSPARENT);
-                            dc.drawLine(dc.getWidth()-i,drawAvg,dc.getWidth()-i,dc.getHeight());
+                            dc.drawLine(leftX,drawAvg,leftX,downY);
                         } else {
                             // Line
                             dc.setColor(colors.get(:lineHight),Graphics.COLOR_TRANSPARENT);
-                            dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
+                            dc.drawLine(leftX,drawSpeed,leftX,downY);
                         }
                         
 
                     }
                 } else {
                     dc.setColor(colors.get(:line),Graphics.COLOR_TRANSPARENT);
-                    dc.drawLine(dc.getWidth()-i,drawSpeed,dc.getWidth()-i,dc.getHeight());
+                    dc.drawLine(leftX,drawSpeed,leftX,downY);
                 }
                 
                 // Draw Value point
@@ -195,9 +198,9 @@ class DataStorageGraph {
 
                 if(prevSpeed!=null){
                     dc.setColor(Graphics.COLOR_DK_RED,Graphics.COLOR_TRANSPARENT);
-                    dc.drawLine(prevSpeed[0],prevSpeed[1],dc.getWidth()-i,drawSpeed);
+                    dc.drawLine(prevSpeed[0],prevSpeed[1],leftX,drawSpeed);
                 }
-                prevSpeed=[dc.getWidth()-i,drawSpeed];
+                prevSpeed=[leftX,drawSpeed];
             } else {
                 prevSpeed=null;
             }
@@ -207,16 +210,16 @@ class DataStorageGraph {
                 dc.setPenWidth(2);
                 dc.setColor(colors.get(:avg),Graphics.COLOR_TRANSPARENT);
                 if(prevAvg!=null){
-                    dc.drawLine(prevAvg[0],prevAvg[1],dc.getWidth()-i,drawAvg);
+                    dc.drawLine(prevAvg[0],prevAvg[1],leftX,drawAvg);
                 } else {
-                    dc.drawPoint(dc.getWidth()-i,drawAvg);
+                    dc.drawPoint(leftX,drawAvg);
                 }
-                prevAvg=[dc.getWidth()-i,drawAvg];
+                prevAvg=[leftX,drawAvg];
             } else {
                 prevAvg=null;
             }
         }
-
+        
     }
 
     function toString() as String{

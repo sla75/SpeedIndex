@@ -20,12 +20,7 @@ class Gear extends Drawable {
         }
         Drawable.initialize(params);
     }
-    public function setLocX(x as Number) as Void {
-        mainText.locX=x;
-    }
-    public function setLocY(y as Number) as Void {
-        mainText.locY=y;
-    }
+    
     public function setFont(font as Graphics.FontType) as Void {
         mainText.setFont(font);
     }
@@ -45,36 +40,38 @@ class Gear extends Drawable {
         return self.visible;
     }
     public function onLayout(dc as Dc) as Void {
+        mainText.locX=self.locX;
+        mainText.locY=self.locY;
         var l=dc.getTextWidthInPixels("12",mainText.getFont());
         var y=mainText.locY-mainText.getFontDescent()/2;
         
         fps=[];
         var lSIN60=l*SIN60;
         var fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+l,y]);
-        fp.add([mainText.locX-l/2,y+lSIN60]);
-        fp.add([mainText.locX-l/2,y-lSIN60]);
+        fp.add([self.locX+l,y]);
+        fp.add([self.locX-l/2,y+lSIN60]);
+        fp.add([self.locX-l/2,y-lSIN60]);
         fp.add(fp[0]);
         fps.add(fp);
 
         fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+lSIN60,y+l/2]);
-        fp.add([mainText.locX-lSIN60,y+l/2]);
-        fp.add([mainText.locX,y-l]);
+        fp.add([self.locX+lSIN60,y+l/2]);
+        fp.add([self.locX-lSIN60,y+l/2]);
+        fp.add([self.locX,y-l]);
         fp.add(fp[0]);
         fps.add(fp);
 
         fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+l/2,y+lSIN60]);
-        fp.add([mainText.locX-l,y]);
-        fp.add([mainText.locX+l/2,y-lSIN60]);
+        fp.add([self.locX+l/2,y+lSIN60]);
+        fp.add([self.locX-l,y]);
+        fp.add([self.locX+l/2,y-lSIN60]);
         fp.add(fp[0]);
         fps.add(fp);
 
         fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX,y+l]);
-        fp.add([mainText.locX-lSIN60,y-l/2]);
-        fp.add([mainText.locX+lSIN60,y-l/2]);
+        fp.add([self.locX,y+l]);
+        fp.add([self.locX-lSIN60,y-l/2]);
+        fp.add([self.locX+lSIN60,y-l/2]);
         fp.add(fp[0]);
         fps.add(fp);
     }
@@ -89,5 +86,21 @@ class Gear extends Drawable {
             mainText.draw(dc);
         }
         
+    }
+
+    (:release)
+    public function checkDebug(colorMode as ColorMode) as Void {
+    }
+    (:debug)
+    public function checkDebug(colorMode as ColorMode) as Void {
+        var currentGear=Math.rand()%12+1;
+        currentGear=System.getClockTime().sec==17?null:currentGear;
+        LogMonkey.Debug.logVariable("Gear.checkDebug()","currentGear",currentGear);
+        self.setText(currentGear==null?"--":currentGear.toString());
+        if(currentGear==1||currentGear==12){
+            self.setColor(colorMode.getFieldColor(:rearEdge));
+        } else {
+            self.setColor(colorMode.getFieldColor(:value));
+        }
     }
 }
