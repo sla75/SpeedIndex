@@ -93,22 +93,33 @@ class Heart extends Drawable {
             mainText.draw(dc);
         }
         /***/
-        var w=dc.getTextWidthInPixels("8.8",mainText.getFont());
+        var w=dc.getTextWidthInPixels(mainText.getText(),mainText.getFont());
         var a=mainText.getFontAscent();
+        var d=mainText.getFontDescent();
         var h=mainText.getFontHeight();
         
 
         var fp=[] as Array<Graphics.Point2D>;
-        fp.add([locX-20,locY]);
-        fp.add([locX,locY-20]);
-        fp.add([locX+20,locY]);
-        fp.add([locX,locY+20]);
+        fp.add([locX-w/2-a/2,locY]);
+        fp.add([locX,locY-h/2-w/2]);
+        fp.add([locX+w/2+a/2,locY]);
+        fp.add([locX,locY+h/2+w/2]);
         dc.setColor(Graphics.COLOR_BLUE,Graphics.COLOR_TRANSPARENT);
         dc.fillPolygon(fp);
 
         dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(locX-w/2,locY-h/2,w,a);
+        dc.drawLine(locX-w,locY,locX+w,locY);
+        dc.drawLine(locX,locY-w,locX,locY+w);
 
+        dc.setColor(Graphics.COLOR_DK_GREEN,Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(locX-w,locY-(h/2+w/2)/2,locX+w,locY-(h/2+w/2)/2);
+        dc.drawLine(locX-(w/2+a/2)/2,locY-w,locX-(w/2+a/2)/2,locY+w);
+        dc.drawCircle(locX-(w/2+a/2)/2,locY-(h/2+w/2)/2,a>w?a/2:w/2);
+        
+
+
+        //mainText.locY=self.locY+d;
         mainText.draw(dc);
     }
 }
