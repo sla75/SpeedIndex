@@ -93,20 +93,36 @@ class Heart extends Drawable {
             mainText.draw(dc);
         }
         /***/
-        var w=dc.getTextWidthInPixels(mainText.getText(),mainText.getFont());
-        var a=mainText.getFontAscent();
+        var a=dc.getTextWidthInPixels(mainText.getText(),mainText.getFont());
+        var b=mainText.getFontAscent();
+        //var b=mainText.getFontHeight();
         var d=mainText.getFontDescent();
-        var h=mainText.getFontHeight();
+        var a2=a/2;
+        var b2=b/2;
+        var ab2=(a+b)/2;
+        //var y=locY-d/2;
+        var y=locY;
+        var r=Math.sqrt((ab2*ab2)*2)/2;
         
-
         var fp=[] as Array<Graphics.Point2D>;
-        fp.add([locX-w/2-a/2,locY]);
-        fp.add([locX,locY-h/2-w/2]);
-        fp.add([locX+w/2+a/2,locY]);
-        fp.add([locX,locY+h/2+w/2]);
+        fp.add([locX-ab2,y]);
+        fp.add([locX,y-ab2]);
+        fp.add([locX+ab2,y]);
+        fp.add([locX,y+ab2]);
         dc.setColor(Graphics.COLOR_BLUE,Graphics.COLOR_TRANSPARENT);
         dc.fillPolygon(fp);
 
+        dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(locX,y-b,locX,y+b);
+        dc.drawLine(locX-a,y,locX+a,y);
+        
+        dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(locX-a2,y-b2,a,b);
+
+        dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
+        dc.drawCircle(locX-ab2/2,y-ab2/2,r);
+        dc.drawCircle(locX+ab2/2,y-ab2/2,r);
+        /***
         dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
         dc.drawRectangle(locX-w/2,locY-h/2,w,a);
         dc.drawLine(locX-w,locY,locX+w,locY);
@@ -117,7 +133,7 @@ class Heart extends Drawable {
         dc.drawLine(locX-(w/2+a/2)/2,locY-w,locX-(w/2+a/2)/2,locY+w);
         dc.drawCircle(locX-(w/2+a/2)/2,locY-(h/2+w/2)/2,a>w?a/2:w/2);
         
-
+        /***/
 
         //mainText.locY=self.locY+d;
         mainText.draw(dc);

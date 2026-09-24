@@ -180,11 +180,11 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         gearNum.setLocY(valueArea.locY+valueIndex.getFontHeight());
         gearNum.onLayout(dc);
         heart.locX=(dc.getWidth()-avgTriangle.locX);
-        heart.locY=(4*self.rim);
+        heart.locY=(6*self.rim);
         heart.onLayout(dc);
 
         heart2.locX=(avgTriangle.locX);
-        heart2.locY=(4*self.rim);
+        heart2.locY=(6*self.rim);
         heart2.onLayout(dc);
 
         ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenHeight-labelLine);
