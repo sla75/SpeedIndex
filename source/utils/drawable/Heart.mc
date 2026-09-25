@@ -6,9 +6,7 @@ import LogMonkey;
 
 class Heart extends Drawable {
 
-    private var fps=[] as Array<Array<Graphics.Point2D>>;
-    private const SIN60=0.866f;
-    
+   
     private var options as Dictionary;
     private var visible=true as Boolean;
     private var mainText=new MyText({:font=>Graphics.FONT_TINY,:justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
@@ -19,6 +17,10 @@ class Heart extends Drawable {
         if(params.get(:font)!=null){
             mainText.setFont(params.get(:font));
         }
+        if(options.get(:color)==null){
+            options.put(:color,Graphics.COLOR_RED);
+        }
+        
         Drawable.initialize(params);
     }
     public function setFont(font as Graphics.FontType) as Void {
@@ -31,10 +33,10 @@ class Heart extends Drawable {
     private function _setText(text as String) as Void {
         mainText.setText(text);
     }
-    private function _setTextColor(color as Graphics.ColorType) as Void {
+    private function setTextColor(color as Graphics.ColorType) as Void {
         mainText.setColor(color);
     }
-    private function _setColor(color as Graphics.ColorType) as Void {
+    private function setColor(color as Graphics.ColorType) as Void {
         options.put(:color,color);
     }
     public function setVisible(visible as Boolean) as Void {
@@ -43,99 +45,53 @@ class Heart extends Drawable {
     public function isVisible() as Boolean {
         return self.visible;
     }
+    private var fps={:polygon=>null,:circleXl=>0,:circleXr=>0,:circleY=>0,:circleR=>0} as Dictionary<Symbol,Array>;
     public function onLayout(dc as Dc) as Void {
         mainText.locX=self.locX;
         mainText.locY=self.locY;
-        /***
-        var l=dc.getTextWidthInPixels("8.8",mainText.getFont());
-        var y=mainText.locY-mainText.getFontDescent()/2;
         
-        fps=[];
-        var lSIN60=l*SIN60;
-        var fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+l,y]);
-        fp.add([mainText.locX-l/2,y+lSIN60]);
-        fp.add([mainText.locX-l/2,y-lSIN60]);
-        fp.add(fp[0]);
-        fps.add(fp);
+        var a=dc.getTextWidthInPixels("0.0",mainText.getFont());
+        var b=mainText.getFontAscent();
+        //var b=mainText.getFontHeight();
+        var d=mainText.getFontDescent();
+        var a2=(a/2).toNumber();
+        var a4=(a2/2).toNumber();
+        var b2=(b/2).toNumber();
+        var y=locY-(d/2).toNumber();
+        var r=Math.sqrt(2*(a2*a2))/2;
 
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+lSIN60,y+l/2]);
-        fp.add([mainText.locX-lSIN60,y+l/2]);
-        fp.add([mainText.locX,y-l]);
-        fp.add(fp[0]);
-        fps.add(fp);
-
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX+l/2,y+lSIN60]);
-        fp.add([mainText.locX-l,y]);
-        fp.add([mainText.locX+l/2,y-lSIN60]);
-        fp.add(fp[0]);
-        fps.add(fp);
-
-        fp=[] as Array<Graphics.Point2D>;
-        fp.add([mainText.locX,y+l]);
-        fp.add([mainText.locX-lSIN60,y-l/2]);
-        fp.add([mainText.locX+lSIN60,y-l/2]);
-        fp.add(fp[0]);
-        fps.add(fp);
+        /***
+        dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
+        dc.drawLine(locX,y-b,locX,y+b);
+        dc.drawLine(locX-a,y,locX+a,y);
+        dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);
+        dc.drawRectangle(locX-a2,y-b2,a,b);
         /***/
+
+        var fp=[] as Array<Graphics.Point2D>;
+        fp.add([locX-a2,y+b2]);
+        //fp.add([locX,y+b2-a2]);
+        fp.add([locX,y]);
+        fp.add([locX+a2,y+b2]);
+        fp.add([locX,y+b2+a2]);
+        fps.put(:polygon,fp);
+        fps.put(:circleXl,locX-a4);
+        fps.put(:circleXr,locX+a4);
+        fps.put(:circleY,y-b2);
+        fps.put(:circleR,r);
     }
 
     (:typecheck(true))
     public function draw(dc as Dc)  as Void {
-        /***
-        if(visible){
-            dc.setColor(options.get(:color),Graphics.COLOR_TRANSPARENT);    
-            for(var i=0;i<fps.size();i++){
-                dc.fillPolygon(fps[i] as Array<Graphics.Point2D>);
-            }
-            mainText.draw(dc);
+        if(!visible){
+            return;
         }
-        /***/
-        var a=dc.getTextWidthInPixels(mainText.getText(),mainText.getFont());
-        var b=mainText.getFontAscent();
-        //var b=mainText.getFontHeight();
-        var d=mainText.getFontDescent();
-        var a2=a/2;
-        var b2=b/2;
-        var ab2=(a+b)/2;
-        //var y=locY-d/2;
-        var y=locY;
-        var r=Math.sqrt((ab2*ab2)*2)/2;
-        
-        var fp=[] as Array<Graphics.Point2D>;
-        fp.add([locX-ab2,y]);
-        fp.add([locX,y-ab2]);
-        fp.add([locX+ab2,y]);
-        fp.add([locX,y+ab2]);
-        dc.setColor(Graphics.COLOR_BLUE,Graphics.COLOR_TRANSPARENT);
-        dc.fillPolygon(fp);
-
-        dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(locX,y-b,locX,y+b);
-        dc.drawLine(locX-a,y,locX+a,y);
-        
-        dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
-        dc.drawRectangle(locX-a2,y-b2,a,b);
-
-        dc.setColor(Graphics.COLOR_RED,Graphics.COLOR_TRANSPARENT);
-        dc.drawCircle(locX-ab2/2,y-ab2/2,r);
-        dc.drawCircle(locX+ab2/2,y-ab2/2,r);
-        /***
-        dc.setColor(Graphics.COLOR_PINK,Graphics.COLOR_TRANSPARENT);
-        dc.drawRectangle(locX-w/2,locY-h/2,w,a);
-        dc.drawLine(locX-w,locY,locX+w,locY);
-        dc.drawLine(locX,locY-w,locX,locY+w);
-
-        dc.setColor(Graphics.COLOR_DK_GREEN,Graphics.COLOR_TRANSPARENT);
-        dc.drawLine(locX-w,locY-(h/2+w/2)/2,locX+w,locY-(h/2+w/2)/2);
-        dc.drawLine(locX-(w/2+a/2)/2,locY-w,locX-(w/2+a/2)/2,locY+w);
-        dc.drawCircle(locX-(w/2+a/2)/2,locY-(h/2+w/2)/2,a>w?a/2:w/2);
-        
-        /***/
-
-        //mainText.locY=self.locY+d;
+        dc.setColor(options.get(:color) as Graphics.ColorValue,Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon(fps.get(:polygon));
+        dc.drawCircle(fps.get(:circleXl),fps.get(:circleY),fps.get(:circleR));
+        dc.drawCircle(fps.get(:circleXr),fps.get(:circleY),fps.get(:circleR));
+        //dc.fillCircle(fps.get(:circleXl),fps.get(:circleY),fps.get(:circleR));
+        //dc.fillCircle(fps.get(:circleXr),fps.get(:circleY),fps.get(:circleR));
         mainText.draw(dc);
     }
 }

@@ -142,8 +142,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             valueArea.setFont(Graphics.FONT_NUMBER_THAI_HOT);
             bottomLabel.setFont(Graphics.FONT_SMALL);
             gearNum.setFont(Graphics.FONT_MEDIUM);
-            heart.setFont(Graphics.FONT_MEDIUM);
-            heart2.setFont(Graphics.FONT_MEDIUM);
+            heart.setFont(Graphics.FONT_LARGE);
+            heart2.setFont(Graphics.FONT_NUMBER_MEDIUM);
 
             valueIndex.setFont(Graphics.FONT_MEDIUM);
         } else {
@@ -183,8 +183,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         heart.locY=(6*self.rim);
         heart.onLayout(dc);
 
-        heart2.locX=(avgTriangle.locX);
-        heart2.locY=(6*self.rim);
+        heart2.locX=(dc.getWidth()/3);
+        heart2.locY=(dc.getHeight()/3);
         heart2.onLayout(dc);
 
         ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenHeight-labelLine);
