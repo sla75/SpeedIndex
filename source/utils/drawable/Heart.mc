@@ -57,9 +57,11 @@ class Heart extends Drawable {
         var a2=(a/2).toNumber();
         var a4=(a2/2).toNumber();
         var b2=(b/2).toNumber();
+        var b4=(b2/2).toNumber();
         var ab2=a2+b2;
+        var ab4=a4+b4;
         var y=locY-(d/2).toNumber();
-        var r=Math.sqrt(2*(a2*a2))/2;
+        var r=Math.sqrt(ab2*ab2+b2*b2)/2;
 
         /***
         dc.setColor(Graphics.COLOR_LT_GRAY,Graphics.COLOR_TRANSPARENT);
@@ -69,10 +71,10 @@ class Heart extends Drawable {
         dc.drawRectangle(locX-a2,y-b2,a,b);
         /***/
 
-        fps.put(:polygon,[[locX-ab2,y-b2],[locX,y],[locX+ab2,y-b2],[locX,y+b+a2]] as Array<Array<Graphics.Point2D>>);
-        fps.put(:circleXl,locX-a4);
-        fps.put(:circleXr,locX+a4);
-        fps.put(:circleY,y-b2);
+        fps.put(:polygon,[[locX-ab2,y],[locX,y-b2],[locX+ab2,y],[locX,y+ab2]] as Array<Array<Graphics.Point2D>>);
+        fps.put(:circleXl,locX-ab4);
+        fps.put(:circleXr,locX+ab4);
+        fps.put(:circleY,y-b2/2);
         fps.put(:circleR,r);
         onLayoutDebug(dc);
     }
@@ -115,6 +117,9 @@ class Heart extends Drawable {
             dc.setColor(Graphics.COLOR_DK_GRAY,Graphics.COLOR_TRANSPARENT);
             arr4=fps.get(:outlineText) as Array<Number>;
             dc.drawRectangle(arr4[0],arr4[1],arr4[2],arr4[3]);
+
+            dc.drawLine(fps.get(:circleXl)-1,fps.get(:circleY)-1,fps.get(:circleXl)+1,fps.get(:circleY)+1);
+            dc.drawLine(fps.get(:circleXl)+1,fps.get(:circleY)-1,fps.get(:circleXl)+1,fps.get(:circleY)-1);
         }
 
         mainText.draw(dc);
