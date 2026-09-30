@@ -343,8 +343,21 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         bottomLabel.setVisible(valueArea.isVisible());
         //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
         //showRearIndex=true;
-        heart.setValue(System.getClockTime().sec==17?null:(Math.rand()%50)/10f);
-        heart2.setValue((Math.rand()%50)/10f);
+        heart.setValue(-1);
+        heart.setValue(0);
+        heart.setValue(1);
+        heart.setValue(127);
+        heart.setValue(128);
+        heart.setValue(129);
+        heart.setValue(152);
+        heart.setValue(153);
+        heart.setValue(151);
+        heart.setValue(204);
+        heart.setValue(217);
+        heart.setValue(230);
+        heart.setValue(255);
+        heart.setValue(600);
+        heart2.setValue(System.getClockTime().sec==17?null:System.getClockTime().sec*5);
         if(gearNum.isVisible()){
             gearNum.setText(info.rearDerailleurIndex==null?"--":info.rearDerailleurIndex.toString());
             if(info.rearDerailleurMax!=null&&(info.rearDerailleurIndex==1||info.rearDerailleurIndex==info.rearDerailleurMax)){
