@@ -12,9 +12,9 @@ class Heart extends Drawable {
     private var visible=true as Boolean;
     private var mainText=new MyText({:font=>Graphics.FONT_TINY, :color=>Graphics.COLOR_LT_GRAY, :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
     //private var value=null as Numeric or Null;
-    private const ZONE_INFO = UserProfile.getHeartRateZones(UserProfile.getCurrentSport());
-    private const ZONES_COLOR = [Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_GREEN,Graphics.COLOR_ORANGE,Graphics.COLOR_RED,Graphics.COLOR_DK_RED] as Array<Graphics.ColorType>;
-    private const ZONES_TEXT_COLOR = [Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_WHITE] as Array<Graphics.ColorType>;
+    public static const ZONE_INFO = UserProfile.getHeartRateZones(UserProfile.getCurrentSport());
+    private static const ZONES_COLOR = [Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_GREEN,Graphics.COLOR_ORANGE,Graphics.COLOR_RED,Graphics.COLOR_DK_RED] as Array<Graphics.ColorType>;
+    private static const ZONES_TEXT_COLOR = [Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_WHITE] as Array<Graphics.ColorType>;
 
     public function initialize(params as Dictionary){
         options=params;
@@ -30,6 +30,35 @@ class Heart extends Drawable {
     public function setFont(font as Graphics.FontType) as Void {
         mainText.setFont(font);
     }
+    public static function getZone(value as Number) as Float {
+        var currentZone=6;
+        LogMonkey.Debug.logMessage("Heart","");
+        if(value<0){
+            currentZone=0;
+            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
+            return currentZone.toFloat();
+        } else if (value<ZONE_INFO[0]){
+            LogMonkey.Debug.logMessage("Heart",value+" < "+ZONE_INFO[0]+"["+0+"] return 0");
+            currentZone=value/(ZONE_INFO[0]-1).toFloat();
+            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
+            return currentZone;
+        }
+        for(var z=1;z<ZONE_INFO.size();z++){
+            if(value>ZONE_INFO[z]){
+                LogMonkey.Debug.logMessage("Heart",value+" > "+ZONE_INFO[z]+"["+z+"] continue");
+                continue;
+            }
+            currentZone=z;
+            break;
+        }
+        if(currentZone==6){
+            LogMonkey.Debug.logVariable("Heart",value+" currentZone B",currentZone);
+            return currentZone.toFloat();    
+        }
+        currentZone=value-ZONE_INFO[currentZone-1]/(ZONE_INFO[currentZone]-ZONE_INFO[currentZone-1]).toFloat();
+        LogMonkey.Debug.logVariable("Heart",value+" currentZone C",currentZone);
+        return currentZone;
+    }
     public function setValue(value as Numeric or Null) as Void {
         if(value==null){
             options.put(:color,Graphics.COLOR_LT_GRAY);
@@ -38,30 +67,18 @@ class Heart extends Drawable {
             return;
         }
         LogMonkey.Debug.logMessage("Heart","");
-        var currentZone=ZONE_INFO.size()-1;
-        var lastZoneValue=0;
-        LogMonkey.Debug.logVariable("Heart","value",value);
-        for(var z=0;z<ZONE_INFO.size();z++){
-            LogMonkey.Debug.logVariable("Heart","ZONE_INFO["+z+"]",ZONE_INFO[z]);
-            if(value>ZONE_INFO[z]){
-                lastZoneValue=ZONE_INFO[z];
-                LogMonkey.Debug.logVariable("Heart","lastZoneValue",lastZoneValue);
-                continue;
-            }
-            currentZone=z;
-            LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);
-            break;
-        }
+        var currentZone=getZone(value);
        
         if(currentZone>=ZONE_INFO.size()){
             //currentZone=ZONE_INFO.size();
         } 
         //LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);
         LogMonkey.Debug.logVariable("Heart","value",value);
+        currentZone=currentZone.toNumber();
         options.put(:color,ZONES_COLOR[currentZone]);
         mainText.setColor(ZONES_TEXT_COLOR[currentZone]);
 
-        
+            var lastZoneValue=0;
             LogMonkey.Debug.logVariable("Heart","ZONE_INFO",ZONE_INFO);
             LogMonkey.Debug.logVariable("Heart","lastZoneValue",lastZoneValue);
             LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);

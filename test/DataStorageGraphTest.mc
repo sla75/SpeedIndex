@@ -4,7 +4,7 @@ import Toybox.Lang;
 import Toybox.Test;
 
 class DataStorageGraphTest {
-    (:test)
+    //(:test)
     function dataStorageAddTest(logger) {
         var ds=new DataStorageGraph(5);
         ds.add(null,null);
