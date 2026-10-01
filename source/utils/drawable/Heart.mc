@@ -15,7 +15,7 @@ class Heart extends Drawable {
     public static const ZONE_INFO = UserProfile.getHeartRateZones(UserProfile.getCurrentSport());
     private static const ZONES_COLOR = [Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_GREEN,Graphics.COLOR_ORANGE,Graphics.COLOR_RED,Graphics.COLOR_DK_RED] as Array<Graphics.ColorType>;
     private static const ZONES_TEXT_COLOR = [Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_WHITE] as Array<Graphics.ColorType>;
-
+    
     public function initialize(params as Dictionary){
         options=params;
         if(params.get(:font)!=null){
@@ -32,31 +32,22 @@ class Heart extends Drawable {
     }
     public static function getZone(value as Number) as Float {
         var currentZone=6;
-        LogMonkey.Debug.logMessage("Heart","");
-        if(value<0){
-            currentZone=0;
-            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
-            return currentZone.toFloat();
-        } else if (value<ZONE_INFO[0]){
-            LogMonkey.Debug.logMessage("Heart",value+" < "+ZONE_INFO[0]+"["+0+"] return 0");
-            currentZone=value/(ZONE_INFO[0]-1).toFloat();
-            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
-            return currentZone;
-        }
-        for(var z=1;z<ZONE_INFO.size();z++){
-            if(value>ZONE_INFO[z]){
-                LogMonkey.Debug.logMessage("Heart",value+" > "+ZONE_INFO[z]+"["+z+"] continue");
-                continue;
+        var lastZoneValue=0;
+        for(var z=0;z<ZONE_INFO.size();z++){
+            if(value<=ZONE_INFO[z]){
+                LogMonkey.Debug.logMessage("Heart",value+" <= "+ZONE_INFO[z]+"["+z+"] break");
+                currentZone=z;
+                break;
             }
-            currentZone=z;
-            break;
+            lastZoneValue=ZONE_INFO[z];
+            LogMonkey.Debug.logMessage("Heart",value+" > "+ZONE_INFO[z]+"["+z+"] continue");
         }
         if(currentZone==6){
-            LogMonkey.Debug.logVariable("Heart",value+" currentZone B",currentZone);
+            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
             return currentZone.toFloat();    
         }
-        currentZone=value-ZONE_INFO[currentZone-1]/(ZONE_INFO[currentZone]-ZONE_INFO[currentZone-1]).toFloat();
-        LogMonkey.Debug.logVariable("Heart",value+" currentZone C",currentZone);
+        currentZone+=(value-lastZoneValue+1)/(ZONE_INFO[currentZone]-lastZoneValue).toFloat();
+        LogMonkey.Debug.logVariable("Heart",value+" currentZone B",currentZone);
         return currentZone;
     }
     public function setValue(value as Numeric or Null) as Void {
