@@ -1,6 +1,7 @@
 import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
+import Toybox.Math;
 import Toybox.UserProfile;
 import Toybox.WatchUi;
 import LogMonkey;
@@ -13,8 +14,8 @@ class Heart extends Drawable {
     private var mainText=new MyText({:font=>Graphics.FONT_TINY, :color=>Graphics.COLOR_LT_GRAY, :justification => Graphics.TEXT_JUSTIFY_CENTER|Graphics.TEXT_JUSTIFY_VCENTER});
     //private var value=null as Numeric or Null;
     public static const ZONE_INFO = UserProfile.getHeartRateZones(UserProfile.getCurrentSport());
-    private static const ZONES_COLOR = [Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_GREEN,Graphics.COLOR_ORANGE,Graphics.COLOR_RED,Graphics.COLOR_DK_RED] as Array<Graphics.ColorType>;
-    private static const ZONES_TEXT_COLOR = [Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_WHITE] as Array<Graphics.ColorType>;
+    private static const ZONES_COLOR = [Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_GREEN,Graphics.COLOR_YELLOW,Graphics.COLOR_RED,Graphics.COLOR_DK_RED] as Array<Graphics.ColorType>;
+    private static const ZONES_TEXT_COLOR = [Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_BLACK,Graphics.COLOR_WHITE,Graphics.COLOR_WHITE] as Array<Graphics.ColorType>;
     
     public function initialize(params as Dictionary){
         options=params;
@@ -24,77 +25,68 @@ class Heart extends Drawable {
         if(options.get(:color)==null){
             options.put(:color,Graphics.COLOR_RED);
         }
+
+        options.put(:colorShadowBefore,options.get(:colorShadowBefore)!=null?options.get(:colorShadowBefore):Graphics.COLOR_LT_GRAY);
+        options.put(:colorShadowAfter,options.get(:colorShadowAfter)!=null?options.get(:colorShadowAfter):Graphics.COLOR_DK_GRAY);
+        
         Drawable.initialize(params);
         
     }
     public function setFont(font as Graphics.FontType) as Void {
         mainText.setFont(font);
     }
-    public static function getZone(value as Number) as Float {
+    public static function getZone(value as Number or Null) as Float {
+        if(value==null||value<1){
+            return 0f;
+        }
         var currentZone=6;
         var lastZoneValue=0;
         for(var z=0;z<ZONE_INFO.size();z++){
             if(value<=ZONE_INFO[z]){
-                LogMonkey.Debug.logMessage("Heart",value+" <= "+ZONE_INFO[z]+"["+z+"] break");
+                //LogMonkey.Debug.logMessage("Heart",value+" <= "+ZONE_INFO[z]+"["+z+"] break");
                 currentZone=z;
                 break;
             }
             lastZoneValue=ZONE_INFO[z];
-            LogMonkey.Debug.logMessage("Heart",value+" > "+ZONE_INFO[z]+"["+z+"] continue");
+            //LogMonkey.Debug.logMessage("Heart",value+" > "+ZONE_INFO[z]+"["+z+"] continue");
         }
         if(currentZone==6){
-            LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
+            //LogMonkey.Debug.logVariable("Heart",value+" currentZone A",currentZone);
             return currentZone.toFloat();    
         }
-        currentZone+=(value-lastZoneValue+1)/(ZONE_INFO[currentZone]-lastZoneValue).toFloat();
-        LogMonkey.Debug.logVariable("Heart",value+" currentZone B",currentZone);
+        //LogMonkey.Debug.logMessage("Heart","currentZone+="+currentZone+"+("+value+"-"+lastZoneValue+"-1)/("+ZONE_INFO[currentZone]+"-"+lastZoneValue+").toFloat()");
+        currentZone+=(value-lastZoneValue-1)/(ZONE_INFO[currentZone]-lastZoneValue).toFloat();
+        currentZone*=10;
+        currentZone=Math.floor(currentZone)/10f;
+        //LogMonkey.Debug.logVariable("Heart",value+" currentZone B",currentZone);
         return currentZone;
     }
     public function setValue(value as Numeric or Null) as Void {
+
         if(value==null){
             options.put(:color,Graphics.COLOR_LT_GRAY);
             mainText.setColor(Graphics.COLOR_DK_GRAY);
             mainText.setText("--");
             return;
         }
-        LogMonkey.Debug.logMessage("Heart","");
         var currentZone=getZone(value);
        
-        if(currentZone>=ZONE_INFO.size()){
-            //currentZone=ZONE_INFO.size();
-        } 
-        //LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);
-        LogMonkey.Debug.logVariable("Heart","value",value);
-        currentZone=currentZone.toNumber();
+        LogMonkey.Debug.logMessage("Heart","value="+value+" f="+currentZone.format("%.1f")+" currentZone="+currentZone);
+        mainText.setText(currentZone.format("%.1f"));
+        currentZone=Math.floor(currentZone).toNumber();
         options.put(:color,ZONES_COLOR[currentZone]);
         mainText.setColor(ZONES_TEXT_COLOR[currentZone]);
 
-            var lastZoneValue=0;
-            LogMonkey.Debug.logVariable("Heart","ZONE_INFO",ZONE_INFO);
-            LogMonkey.Debug.logVariable("Heart","lastZoneValue",lastZoneValue);
-            LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);
-            LogMonkey.Debug.logVariable("Heart","ZONE_INFO["+currentZone+"]",ZONE_INFO[currentZone]);
-            if(value>=ZONE_INFO[ZONE_INFO.size()-1]){
-                currentZone=ZONE_INFO.size();
-            } else {
-                currentZone=currentZone+((value-lastZoneValue)/(ZONE_INFO[currentZone]-lastZoneValue).toFloat());
-            }
-            if(currentZone<0){
-                currentZone=0;
-            }
-            LogMonkey.Debug.logMessage("Heart","----");
-            LogMonkey.Debug.logVariable("Heart","value",value);
-            LogMonkey.Debug.logVariable("Heart","currentZone",currentZone);
-        
-        mainText.setText(currentZone.format("%.1f"));
     }
 
     public function setVisible(visible as Boolean) as Void {
         self.visible=visible;
     }
+
     public function isVisible() as Boolean {
         return self.visible;
     }
+
     private var fps={:debug=>false,:polygon=>null,:circleXl=>0,:circleXr=>0,:circleY=>0,:circleR=>0} as Dictionary<Symbol,Array>;
     
     public function onLayout(dc as Dc) as Void {
@@ -103,7 +95,6 @@ class Heart extends Drawable {
         
         var a=dc.getTextWidthInPixels("0.0",mainText.getFont());
         var b=mainText.getFontAscent();
-        //var b=mainText.getFontHeight();
         var d=mainText.getFontDescent();
         var a2=(a/2).toNumber();
         var b2=(b/2).toNumber();
@@ -112,18 +103,20 @@ class Heart extends Drawable {
         var c2=c/2;
         var r=Math.sqrt(2*c*c)/2;
 
+        fps.put(:polygonBefore,[[locX-c-1,y+b2-1],[locX-1,y-c+b2-1],[locX+c-1,y+b2-1],[locX-1,y+c+b2-1]] as Array<Array<Graphics.Point2D>>);
         fps.put(:polygon,[[locX-c,y+b2],[locX,y-c+b2],[locX+c,y+b2],[locX,y+c+b2]] as Array<Array<Graphics.Point2D>>);
+        fps.put(:polygonAfter,[[locX-c+1,y+b2+1],[locX+1,y-c+b2+1],[locX+c+1,y+b2+1],[locX+1,y+c+b2+1]] as Array<Array<Graphics.Point2D>>);
         fps.put(:circleXl,locX-c2);
         fps.put(:circleXr,locX+c2);
         fps.put(:circleY,y);
         fps.put(:circleR,r);
         //onLayoutDebug(dc);
     }
+
     (:debug)
     public function onLayoutDebug(dc as Dc) as Void {
         var a=dc.getTextWidthInPixels("0.0",mainText.getFont());
         var b=mainText.getFontAscent();
-        //var b=mainText.getFontHeight();
         var d=mainText.getFontDescent();
         var a2=(a/2).toNumber();
         var b2=(b/2).toNumber();
@@ -143,6 +136,16 @@ class Heart extends Drawable {
         if(!visible){
             return;
         }
+        /***/
+        dc.setColor(options.get(:colorShadowBefore) as Graphics.ColorValue,Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon(fps.get(:polygonBefore));
+        dc.fillCircle(fps.get(:circleXl)-1,fps.get(:circleY)-1,fps.get(:circleR));
+        dc.fillCircle(fps.get(:circleXr)-1,fps.get(:circleY)-1,fps.get(:circleR));
+        dc.setColor(options.get(:colorShadowAfter) as Graphics.ColorValue,Graphics.COLOR_TRANSPARENT);
+        dc.fillPolygon(fps.get(:polygonAfter));
+        dc.fillCircle(fps.get(:circleXl)+1,fps.get(:circleY)+1,fps.get(:circleR));
+        dc.fillCircle(fps.get(:circleXr)+1,fps.get(:circleY)+1,fps.get(:circleR));
+        /***/
 
         dc.setColor(options.get(:color) as Graphics.ColorValue,Graphics.COLOR_TRANSPARENT);
         dc.fillPolygon(fps.get(:polygon));

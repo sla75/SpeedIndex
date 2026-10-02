@@ -42,7 +42,6 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private var avgTriangle=new MyText({:justification => Graphics.TEXT_JUSTIFY_CENTER});
     private var gearNum=new Gear({:font=>Graphics.FONT_TINY});
     private var heart=new Heart({:font=>Graphics.FONT_TINY});
-    private var heart2=new Heart({:font=>Graphics.FONT_TINY});
     private const COLORS_DEVICE_STATE=[Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_GRAY,Graphics.COLOR_BLUE,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_RED] as Array<Graphics.ColorValue>;
     private const COLORS_POS_QUALITY=[Graphics.COLOR_RED,Graphics.COLOR_DK_RED,Graphics.COLOR_LT_GRAY,Graphics.COLOR_DK_BLUE,Graphics.COLOR_DK_GREEN] as Array<Graphics.ColorValue>;
     //private const PIRAD=Math.PI/180f;
@@ -50,6 +49,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private enum {
         PROPERTY_CHARTCOLORPARTITION="property_chartColorPartition",
         PROPERTY_SHOWREARINDEX="property_showRearIndex",
+        PROPERTY_SHOWHEART="property_showRearIndex",
         PROPERTY_MINMAXSPEED="property_minMaxSpeed",
         SPEED_OVER_AVG="}",
         SPEED_UNDER_AVG="{",
@@ -101,7 +101,6 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         addDrawable(avgTriangle);
         addDrawable(gearNum);
         addDrawable(heart);
-        addDrawable(heart2);
         initLoad();
     }
     
@@ -126,6 +125,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
         ds.setChartColorPartition(Properties.getValue(PROPERTY_CHARTCOLORPARTITION) as Number);
         gearNum.setVisible(Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
+        heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
         //colorMode.handleSettingUpdate();
         ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
         setColors();
@@ -143,9 +143,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             bottomLabel.setFont(Graphics.FONT_SMALL);
             gearNum.setFont(Graphics.FONT_MEDIUM);
             heart.setFont(Graphics.FONT_LARGE);
-            heart2.setFont(Graphics.FONT_NUMBER_MEDIUM);
-
             valueIndex.setFont(Graphics.FONT_MEDIUM);
+            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
@@ -153,21 +152,21 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
             gearNum.setFont(Graphics.FONT_TINY);
             heart.setFont(Graphics.FONT_TINY);
-            heart2.setFont(Graphics.FONT_TINY);
             labelArea.setFont(Graphics.FONT_TINY);
             valueArea.setFont(Graphics.FONT_NUMBER_HOT);
             bottomLabel.setFont(Graphics.FONT_TINY);
 
             valueIndex.setFont(Graphics.FONT_SMALL);
+            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
 
         }
         
+        if(dc.getWidth()<=System.getDeviceSettings().screenWidth/2){
+            // HALF
+            heart.setVisible(false);
+        }
+
         SlavicsSimpleDataField.onLayout(dc);        
-
-        
-
-        
-        
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
@@ -176,16 +175,16 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         avgTriangle.locX=(valueArea.locX-dc.getTextWidthInPixels("00",valueArea.getFont())/2)/2;
         avgTriangle.locY=valueArea.locY;
 
+        if(heart.isVisible()){
+            heart.locX=dc.getWidth()-avgTriangle.locX;
+            heart.locY=dc.getHeight()/4;
+            heart.onLayout(dc);
+        }        
+        
         gearNum.setLocX(dc.getWidth()-avgTriangle.locX);
-        gearNum.setLocY(valueArea.locY+valueIndex.getFontHeight());
+        gearNum.setLocY(3*dc.getHeight()/4);
         gearNum.onLayout(dc);
-        heart.locX=(dc.getWidth()-avgTriangle.locX);
-        heart.locY=(6*self.rim);
-        heart.onLayout(dc);
-
-        heart2.locX=(dc.getWidth()/3);
-        heart2.locY=(dc.getHeight()/3);
-        heart2.onLayout(dc);
+        
 
         ds.setBox(0,labelLine,System.getDeviceSettings().screenWidth,System.getDeviceSettings().screenHeight-labelLine);
 
@@ -339,25 +338,13 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
 
         valueIndex.setVisible(valueArea.isVisible());
-
         bottomLabel.setVisible(valueArea.isVisible());
-        //LogMonkey.Debug.logVariable("SpeedIndexView.compute()","ds",ds);
-        //showRearIndex=true;
-        heart.setValue(-1);
-        heart.setValue(0);
-        heart.setValue(1);
-        heart.setValue(127);
-        heart.setValue(128);
-        heart.setValue(129);
-        heart.setValue(152);
-        heart.setValue(153);
-        heart.setValue(151);
-        heart.setValue(204);
-        heart.setValue(217);
-        heart.setValue(230);
-        heart.setValue(255);
-        heart.setValue(600);
-        heart2.setValue(System.getClockTime().sec==17?null:System.getClockTime().sec*5);
+
+        if(heart.isVisible()){
+            heart.setValue(info.currentHeartRate);
+            //heart.setValue(System.getClockTime().sec==17?null:System.getClockTime().sec*5);
+        }
+
         if(gearNum.isVisible()){
             gearNum.setText(info.rearDerailleurIndex==null?"--":info.rearDerailleurIndex.toString());
             if(info.rearDerailleurMax!=null&&(info.rearDerailleurIndex==1||info.rearDerailleurIndex==info.rearDerailleurMax)){
