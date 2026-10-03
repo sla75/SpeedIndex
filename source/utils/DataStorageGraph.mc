@@ -52,7 +52,7 @@ class DataStorageGraph {
 
     (:release)
     function add(numeric1 as Numeric or Null,numeric2 as Numeric or Null) as Void {
-        if(data.size()>=maxSize){
+        if(data.size()>=self.width){
             data=data.slice(1,null);
         }
         data.add([numeric1,numeric2] as NumArray);
