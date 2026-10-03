@@ -35,9 +35,9 @@
 
         <setting propertyKey="@Properties.property_chartColorPartition" title="@Strings.property_chartColorPartition">
             <settingConfig type="list">
-                <listEntry value="-1">No show graph</listEntry>
-                <listEntry value="0">Horizontaly</listEntry>
-                <listEntry value="1">Verticaly</listEntry>
+                <listEntry value="0">@Strings.NoShow</listEntry>
+                <listEntry value="1">@Strings.Horizontally</listEntry>
+                <listEntry value="2">@Strings.Vertically</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.property_minMaxSpeed" title="@Strings.property_minMaxSpeed">

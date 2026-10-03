@@ -25,7 +25,6 @@ class Heart extends Drawable {
         if(options.get(:color)==null){
             options.put(:color,Graphics.COLOR_RED);
         }
-
         options.put(:colorShadowBefore,options.get(:colorShadowBefore)!=null?options.get(:colorShadowBefore):Graphics.COLOR_LT_GRAY);
         options.put(:colorShadowAfter,options.get(:colorShadowAfter)!=null?options.get(:colorShadowAfter):Graphics.COLOR_DK_GRAY);
         
@@ -133,7 +132,9 @@ class Heart extends Drawable {
 
     (:typecheck(true))
     public function draw(dc as Dc)  as Void {
-        if(!visible){
+        LogMonkey.Debug.logVariable("Heart:draw","visible",visible);
+        LogMonkey.Debug.logVariable("Heart:draw","self.visible",self.visible);
+        if(!self.visible){
             return;
         }
         /***/

@@ -10,4 +10,8 @@
     <string id="property_showRearIndex">Show Rear Index</string>
     <string id="property_showRearIndex_title">Show Rear Index</string>
     <string id="property_showHeartZone_title">Show Heart Zone</string>
+
+    <string id="NoShow">NoShow</string>
+    <string id="Horizontally">Horizontally</string>
+    <string id="Vertically">Vertically</string>
 </strings>

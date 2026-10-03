@@ -274,7 +274,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
 
         //speed=Math.rand()%200/10;
-        /*** DEBUG ***/
+        /*** DEBUG ***
         //isHdDisplay?0:
         speed=20+Math.rand()%5;
         var averageSpeed=(System.getClockTime().sec/30+1)*15;
@@ -291,7 +291,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
                 } else {
                     avgTriangle.setVisible(false);    
                 }
-        /***
+        /***/
         if(speed!=null){
             if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
@@ -342,10 +342,9 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         valueIndex.setVisible(valueArea.isVisible());
         bottomLabel.setVisible(valueArea.isVisible());
 
-        if(heart.isVisible()){
-            heart.setValue(info.currentHeartRate);
-            //heart.setValue(System.getClockTime().sec==17?null:System.getClockTime().sec*5);
-        }
+        heart.setValue(info.currentHeartRate);
+        //heart.setValue(System.getClockTime().sec==17?null:System.getClockTime().sec*5);
+        
 
         if(gearNum.isVisible()){
             gearNum.setText(info.rearDerailleurIndex==null?"--":info.rearDerailleurIndex.toString());
