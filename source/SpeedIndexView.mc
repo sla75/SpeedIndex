@@ -274,24 +274,24 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         }
 
         //speed=Math.rand()%200/10;
-        /*** DEBUG ***
-        //isHdDisplay?0:
-        speed=20+Math.rand()%5;
-        var averageSpeed=(System.getClockTime().sec/30+1)*15;
-        if(speed-averageSpeed>0.28f){
-                    // Speed over average
-                    avgTriangle.setVisible(true);
-                    avgTriangle.setColor(Graphics.COLOR_DK_RED);
-                    avgTriangle.setText(SPEED_OVER_AVG);
-                } else if(averageSpeed-speed>0.28f){
-                    // Speed under average
-                    avgTriangle.setVisible(true);
-                    avgTriangle.setColor(Graphics.COLOR_DK_BLUE);
-                    avgTriangle.setText(SPEED_UNDER_AVG);
-                } else {
-                    avgTriangle.setVisible(false);    
-                }
-        /***/
+        if(isDebug()){
+            ///*** DEBUG ***
+            speed=20+Math.rand()%5;
+            var averageSpeed=(System.getClockTime().sec/30+1)*15;
+            if(speed-averageSpeed>0.28f){
+                // Speed over average
+                avgTriangle.setVisible(true);
+                avgTriangle.setColor(Graphics.COLOR_DK_RED);
+                avgTriangle.setText(SPEED_OVER_AVG);
+            } else if(averageSpeed-speed>0.28f){
+                // Speed under average
+                avgTriangle.setVisible(true);
+                avgTriangle.setColor(Graphics.COLOR_DK_BLUE);
+                avgTriangle.setText(SPEED_UNDER_AVG);
+            } else {
+                avgTriangle.setVisible(false);    
+            }
+        }
         if(speed!=null){
             if(info.averageSpeed!=null){
                 if(speed-info.averageSpeed>0.28f){
@@ -353,22 +353,30 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             } else {
                 gearNum.setColor(colorMode.getFieldColor(:value));
             }
-            /*** DEBUG ***/
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
-            var currentGear=Math.rand()%12+1;
-            currentGear=System.getClockTime().sec==17?null:currentGear;
-            LogMonkey.Debug.logVariable("SpeedIndexView.compute()","currentGear",currentGear);
-            gearNum.setText(currentGear==null?"--":currentGear.toString());
-            if(currentGear==1||currentGear==12){
-                gearNum.setColor(colorMode.getFieldColor(:rearEdge));
-            } else {
-                gearNum.setColor(colorMode.getFieldColor(:value));
+            if(isDebug()){
+                // DEBUG
+                LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info",info);
+                LogMonkey.Debug.logVariable("SpeedIndexView.compute()","info.rearDerailleurIndex",info.rearDerailleurIndex);
+                var currentGear=Math.rand()%12+1;
+                currentGear=System.getClockTime().sec==17?null:currentGear;
+                LogMonkey.Debug.logVariable("SpeedIndexView.compute()","currentGear",currentGear);
+                gearNum.setText(currentGear==null?"--":currentGear.toString());
+                if(currentGear==1||currentGear==12){
+                    gearNum.setColor(colorMode.getFieldColor(:rearEdge));
+                } else {
+                    gearNum.setColor(colorMode.getFieldColor(:value));
+                }
             }
-            /***/
         }
     }
-
+    (:debug)
+    private function isDebug() as Boolean {
+        return true;
+    }
+    (:release)
+    private function isDebug() as Boolean {
+        return false;
+    }
     public function onUpdate(dc as Dc) as Void {
         SlavicsSimpleDataField.onUpdate(dc);
         onUpdateAfter(dc);

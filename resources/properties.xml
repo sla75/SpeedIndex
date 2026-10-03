@@ -35,14 +35,15 @@
 
         <setting propertyKey="@Properties.property_chartColorPartition" title="@Strings.property_chartColorPartition">
             <settingConfig type="list">
-                <listEntry value="0">@Strings.NoShow</listEntry>
-                <listEntry value="1">@Strings.Horizontally</listEntry>
-                <listEntry value="2">@Strings.Vertically</listEntry>
+                <listEntry value="-1">@Strings.NoShow</listEntry>
+                <listEntry value="0">@Strings.Horizontally</listEntry>
+                <listEntry value="1">@Strings.Vertically</listEntry>
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.property_minMaxSpeed" title="@Strings.property_minMaxSpeed">
             <settingConfig type="list">
                 <listEntry value="0">Auto</listEntry>
+                <listEntry value="10">10 km/h</listEntry>
                 <listEntry value="15">15 km/h</listEntry>
                 <listEntry value="20">20 km/h</listEntry>
                 <listEntry value="25">25 km/h</listEntry>

@@ -8,9 +8,9 @@ class DataStorageGraph {
     
     typedef NumArray as Array<Numeric or Null>;
     enum {
-        CHART_PARTITION_NOSHOW=0,
-        CHART_PARTITION_HORIZONTALY=1,
-        CHART_PARTITION_VERTICALY=2
+        CHART_PARTITION_NOSHOW=-1,
+        CHART_PARTITION_HORIZONTALY=0,
+        CHART_PARTITION_VERTICALY=1
     }
     private var data as Array<NumArray>;
     //private var data as Array<Numeric or Null>;
