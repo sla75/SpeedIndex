@@ -14,6 +14,7 @@
         <property id="property_chartColorPartition" type="number">-1</property>
         <property id="property_minMaxSpeed" type="number">30</property>
         <property id="property_showRearIndex" type="boolean">false</property>
+        <property id="property_showHeartZone" type="boolean">false</property>
         <!--property id="property_graphColorMode" type="number">1</property-->
         <!--property id="property_showAdditionalValues" type="number">0</property>
         
@@ -54,6 +55,9 @@
             </settingConfig>
         </setting>
         <setting propertyKey="@Properties.property_showRearIndex" title="@Strings.property_showRearIndex_title">
+            <settingConfig type="boolean" required="true" />
+        </setting>
+        <setting propertyKey="@Properties.property_showHeartZone" title="@Strings.property_showHeartZone_title">
             <settingConfig type="boolean" required="true" />
         </setting>
         <!--setting propertyKey="@Properties.property_graphColorMode" title="@Strings.property_graphColorMode_title">

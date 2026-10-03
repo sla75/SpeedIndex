@@ -49,7 +49,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     private enum {
         PROPERTY_CHARTCOLORPARTITION="property_chartColorPartition",
         PROPERTY_SHOWREARINDEX="property_showRearIndex",
-        PROPERTY_SHOWHEART="property_showRearIndex",
+        PROPERTY_SHOWHEARTZONE="property_showHeartZone",
         PROPERTY_MINMAXSPEED="property_minMaxSpeed",
         SPEED_OVER_AVG="}",
         SPEED_UNDER_AVG="{",
@@ -63,7 +63,8 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         
         //Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_CHARTCOLORPARTITION)==null?-1:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?false:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
-        Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?30:Properties.getValue(PROPERTY_SHOWREARINDEX) as Number);
+        Properties.setValue(PROPERTY_SHOWHEARTZONE,Properties.getValue(PROPERTY_SHOWHEARTZONE)==null?false:Properties.getValue(PROPERTY_SHOWHEARTZONE) as Boolean);
+        Properties.setValue(PROPERTY_MINMAXSPEED,Properties.getValue(PROPERTY_MINMAXSPEED)==null?30:Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
 
         self.setTextLabel(Application.loadResource(Rez.Strings.label));
 
@@ -120,12 +121,13 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         ds.add(10f,null);ds.add(10f,null);ds.add(10f,null);ds.add(10f,15f);ds.add(10f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(12f,15f);ds.add(20f,15f);ds.add(21f,15f);ds.add(22f,15f);ds.add(23f,15f);ds.add(24f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(25f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(35f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(0f,15f);ds.add(5f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(30f,15f);ds.add(20f,15f);ds.add(null,15f);ds.add(null,15f);ds.add(null,15f);
         Properties.setValue(PROPERTY_CHARTCOLORPARTITION,2);
         Properties.setValue(PROPERTY_SHOWREARINDEX,true);
+        Properties.setValue(PROPERTY_SHOWHEARTZONE,true);
     }
     public function onSettingsChanged() as Void {
         LogMonkey.Debug.logMessage("SpeedIndexView.onSettingsChanged()","");
         ds.setChartColorPartition(Properties.getValue(PROPERTY_CHARTCOLORPARTITION) as Number);
         gearNum.setVisible(Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
-        heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
+        heart.setVisible(Properties.getValue(PROPERTY_SHOWHEARTZONE) as Boolean);
         //colorMode.handleSettingUpdate();
         ds.setMinMaxSpeedGraph(Properties.getValue(PROPERTY_MINMAXSPEED) as Number);
         setColors();
@@ -144,7 +146,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             gearNum.setFont(Graphics.FONT_MEDIUM);
             heart.setFont(Graphics.FONT_LARGE);
             valueIndex.setFont(Graphics.FONT_MEDIUM);
-            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
+            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEARTZONE) as Boolean);
         } else {
             LogMonkey.Debug.logMessage("SpeedIndexView.onLayout()",dc.getWidth()+"x"+dc.getHeight()+" TINY");
             labels.get(:topLeft).setFont(Graphics.FONT_MEDIUM);
@@ -157,7 +159,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             bottomLabel.setFont(Graphics.FONT_TINY);
 
             valueIndex.setFont(Graphics.FONT_SMALL);
-            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEART) as Boolean);
+            heart.setVisible(Properties.getValue(PROPERTY_SHOWHEARTZONE) as Boolean);
 
         }
         

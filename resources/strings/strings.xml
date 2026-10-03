@@ -9,4 +9,5 @@
     <string id="property_minMaxSpeed_title">Default maximum speed in graph</string>
     <string id="property_showRearIndex">Show Rear Index</string>
     <string id="property_showRearIndex_title">Show Rear Index</string>
+    <string id="property_showHeartZone_title">Show Heart Zone</string>
 </strings>
