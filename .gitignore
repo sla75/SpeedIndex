@@ -6,6 +6,7 @@ logs/**
 *.prg
 *.code-workspace
 *~
+config.env
 debug/**
 temp/**
 #gen/
