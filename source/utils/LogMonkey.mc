@@ -31,10 +31,10 @@ module LogMonkey {
         }
 
         // The string formats to use when printing log messages
-        private static var FORMAT_VARIABLE = "$1$=($2$) $3$" as String;
-        private static var FORMAT_VARIABLE_NULL = "$1$= <null>" as String;
-        private static var FORMAT_LOG_MESSAGE = "$1$ [$2$] $3$: $4$" as String;
-        private static var FORMAT_TIMESTAMP = "$1$:$2$:$3$" as String; // HH:MM:SS
+        private static const FORMAT_VARIABLE = "$1$=($2$) $3$";
+        private static const FORMAT_VARIABLE_NULL as String = "$1$= <null>" as String;
+        private static const FORMAT_LOG_MESSAGE = "$1$ [$2$] $3$: $4$" as String;
+        private static const FORMAT_TIMESTAMP = "$1$:$2$:$3$" as String; // HH:MM:SS
 
         //! Forms a log message based on the given values.
         //! @param tag [Toybox::Lang::String] The tag to apply to the log message

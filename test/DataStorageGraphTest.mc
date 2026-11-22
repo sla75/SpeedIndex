@@ -5,11 +5,11 @@ import Toybox.Test;
 
 class DataStorageGraphTest {
     //(:test)
-    function dataStorageAddTest(logger) {
+    function dataStorageAddTest(logger as Logger) {
         var ds=new DataStorageGraph(5);
         ds.add(null,null);
         System.println(ds);
-        var minmax=ds.getMinMax(ds.size());
+        var minmax=ds.getMinMax(ds.size()) as DataStorageGraph.NumArray?;
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","minmax",minmax);
         //LogMonkey.Debug.logVariable("DataStorageTest","avg",ds.getAverage(ds.size()));
@@ -21,8 +21,8 @@ class DataStorageGraphTest {
         System.println(ds);
         minmax=ds.getMinMax(ds.size());
         LogMonkey.Debug.logVariable("DataStorageTest","size",ds.size());
-        LogMonkey.Debug.logVariable("DataStorageTest","min",minmax[0]);
-        LogMonkey.Debug.logVariable("DataStorageTest","max",minmax[1]);
+        LogMonkey.Debug.logVariable("DataStorageTest","min",minmax[0] as Numeric);
+        LogMonkey.Debug.logVariable("DataStorageTest","max",minmax[1] as Numeric);
         //LogMonkey.Debug.logVariable("DataStorageTest","avg",ds.getAverage(ds.size()));
         Test.assertEqual(minmax[0],5);
         Test.assertEqual(minmax[1],5);

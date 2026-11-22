@@ -15,7 +15,7 @@ class SpeedIndexApp extends Application.AppBase {
     // onStop() is called when your application is exiting
     function onStop(state as Dictionary?) as Void {
     }
-    var view=null as SpeedIndexView;
+    private var view as SpeedIndexView?;
     // Return the initial view of your application here
     function getInitialView() as [Views] or [Views, InputDelegates] {
         view=new SpeedIndexView();
