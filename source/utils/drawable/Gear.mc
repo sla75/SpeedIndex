@@ -2,7 +2,7 @@ import Toybox.Application;
 import Toybox.Graphics;
 import Toybox.Lang;
 import Toybox.WatchUi;
-import LogMonkey;
+import BarrelIndex;
 
 class Gear extends Drawable {
 

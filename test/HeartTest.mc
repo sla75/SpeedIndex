@@ -2,7 +2,7 @@ import Toybox.Activity;
 import Toybox.AntPlus;
 import Toybox.Lang;
 import Toybox.Test;
-import LogMonkey;
+import BarrelIndex;
 
 class HeartTest {
     (:test)

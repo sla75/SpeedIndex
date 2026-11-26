@@ -7,9 +7,9 @@ import Toybox.Math;
 import Toybox.Sensor;
 import Toybox.System;
 import Toybox.WatchUi;
-import LogMonkey;
+import BarrelIndex;
 
-class SpeedIndexView extends SlavicsSimpleDataField {
+class SpeedIndexView extends SlavicsSimpleDataFieldOld {
 
     private var colorMode=new ColorMode({
         :day=>{
@@ -59,7 +59,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
 
     function initialize() {
         LogMonkey.Debug.logMessage("SpeedIndexView.initialize()","");
-        SlavicsSimpleDataField.initialize();
+        SlavicsSimpleDataFieldOld.initialize();
         
         //Properties.setValue(PROPERTY_SHOWGRAPH,Properties.getValue(PROPERTY_CHARTCOLORPARTITION)==null?-1:Properties.getValue(PROPERTY_SHOWGRAPH) as Boolean);
         Properties.setValue(PROPERTY_SHOWREARINDEX,Properties.getValue(PROPERTY_SHOWREARINDEX)==null?false:Properties.getValue(PROPERTY_SHOWREARINDEX) as Boolean);
@@ -168,7 +168,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
             heart.setVisible(false);
         }
 
-        SlavicsSimpleDataField.onLayout(dc);        
+        SlavicsSimpleDataFieldOld.onLayout(dc);        
 
         labels.get(:bottomLeft).locX=self.rim;
         labels.get(:bottomLeft).locY=dc.getHeight()-self.rim-labels.get(:bottomLeft).getFontAscent();
@@ -237,10 +237,10 @@ class SpeedIndexView extends SlavicsSimpleDataField {
     //private var invalidBoardShiftCount=0 as Number;
     function compute(info as Activity.Info) as Void {
         //LogMonkey.Debug.logMessage("SpeedIndexView","compute(speed="+info.currentSpeed+")");
-        SlavicsSimpleDataField.compute(info);
+        SlavicsSimpleDataFieldOld.compute(info);
         colorMode.compute();
         if(colorMode.isChangeNight()){
-            SlavicsSimpleDataField.setColors(colorMode.getColors());
+            SlavicsSimpleDataFieldOld.setColors(colorMode.getColors());
             setColors();
         }
         
@@ -378,7 +378,7 @@ class SpeedIndexView extends SlavicsSimpleDataField {
         return false;
     }
     public function onUpdate(dc as Dc) as Void {
-        SlavicsSimpleDataField.onUpdate(dc);
+        SlavicsSimpleDataFieldOld.onUpdate(dc);
         onUpdateAfter(dc);
         
     }

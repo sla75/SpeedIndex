@@ -4,7 +4,7 @@ import Toybox.Lang;
 import Toybox.Math;
 import Toybox.UserProfile;
 import Toybox.WatchUi;
-import LogMonkey;
+import BarrelIndex;
 
 class Heart extends Drawable {
 

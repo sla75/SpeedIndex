@@ -5,9 +5,9 @@ import Toybox.Math;
 import Toybox.System;
 import Toybox.Time;
 import Toybox.WatchUi;
-import LogMonkey;
+import BarrelIndex;
 
-class SlavicsSimpleDataField extends WatchUi.DataField {
+class SlavicsSimpleDataFieldOld extends WatchUi.DataField {
 
     public const FONTS=[
             Graphics.FONT_NUMBER_THAI_HOT,
